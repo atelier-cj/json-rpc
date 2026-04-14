@@ -1,0 +1,19 @@
+[workspace]
+  members = [
+    "jsonrpc",
+    "jsonrpc_stdio",
+    "jsonrpc_tcp",
+    "jsonrpc_unix"
+  ]
+  build-members = [
+    "jsonrpc",
+    "jsonrpc_stdio",
+    "jsonrpc_tcp",
+    "jsonrpc_unix"
+  ]
+  test-members = []
+  compile-option = ""
+  override-compile-option = ""
+  link-option = ""
+  target-dir = ""
+  script-dir = ""

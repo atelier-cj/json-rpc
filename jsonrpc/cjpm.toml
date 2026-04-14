@@ -1,0 +1,25 @@
+[package]
+  cjc-version = "1.0.0"
+  name = "jsonrpc"
+  organization = "ystyle"
+  description = "JSON-RPC 2.0 通用框架"
+  version = "0.1.0"
+  output-type = "static"
+  compile-option = ""
+  override-compile-option = ""
+  link-option = ""
+
+[dependencies]
+  "jsonvalue" = "1.0.1"
+
+[target.x86_64-unknown-linux-gnu.bin-dependencies]
+  path-option = [ "${CANGJIE_STDX_PATH}" ]
+
+[target.x86_64-w64-mingw32.bin-dependencies]
+  path-option = [ "${CANGJIE_STDX_PATH}" ]
+
+[target.aarch64-linux-ohos.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+
+[target.x86_64-linux-ohos.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
