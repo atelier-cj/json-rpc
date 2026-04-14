@@ -128,6 +128,32 @@ public func close(): Unit {
         this.transport.close()
     }
     
+    public func copyHandlersFrom(other: JsonRpcServer): Unit {
+        let handlers = other.getHandlers()
+        for ((method, handler) in handlers) {
+            this.handlers.add(method, handler)
+        }
+    }
+    
+    public func copyMiddlewaresFrom(other: JsonRpcServer): Unit {
+        let mws = other.getMiddlewares()
+        for (mw in mws) {
+            this.middlewares.add(mw)
+        }
+    }
+    
+    public func getHandlers(): HashMap<String, MethodHandler> {
+        synchronized(this.lock) {
+            HashMap<String, MethodHandler>(this.handlers)
+        }
+    }
+    
+    public func getMiddlewares(): ArrayList<Middleware> {
+        synchronized(this.lock) {
+            ArrayList<Middleware>(this.middlewares)
+        }
+    }
+    
     public func isClosed(): Bool {
         synchronized(this.lock) {
             !this.running
@@ -204,7 +230,7 @@ public func close(): Unit {
         }
     }
 
-    private func executeMiddlewares(ctx: RequestContext, handlerCtx: HandlerContext, method: String): HandlerResult {
+    public func executeMiddlewares(ctx: RequestContext, handlerCtx: HandlerContext, method: String): HandlerResult {
         if (this.middlewares.size == 0) {
             return this.dispatch(method, handlerCtx)
         }
@@ -227,7 +253,7 @@ public func close(): Unit {
         next()
     }
 
-    private func dispatch(method: String, ctx: HandlerContext): HandlerResult {
+    public func dispatch(method: String, ctx: HandlerContext): HandlerResult {
         match (this.handlers.get(method)) {
             case Some(handler) => try {
                 handler.handle(ctx)

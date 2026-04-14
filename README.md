@@ -7,7 +7,12 @@ JSON-RPC 2.0 通用框架（仓颉语言）
 ```toml
 [dependencies]
   "ystyle::jsonrpc" = "0.1.0"
-  "ystyle::jsonrpc_stdio" = "0.1.0"   # 或 jsonrpc_tcp / jsonrpc_unix
+  # 按需选择传输层
+  "ystyle::jsonrpc_stdio" = "0.1.0"      # Stdio
+  "ystyle::jsonrpc_tcp" = "0.1.0"        # TCP
+  "ystyle::jsonrpc_unix" = "0.1.0"       # Unix Socket
+  "ystyle::jsonrpc_http" = "0.1.0"       # HTTP POST
+  "ystyle::jsonrpc_websocket" = "0.1.0"  # WebSocket
 ```
 
 ## 快速开始
@@ -114,6 +119,64 @@ main() {
 | StdioTransport | LSP、进程管道 |
 | TcpServerTransport / TcpClientTransport | 网络服务 |
 | UnixServerTransport / UnixClientTransport | 本地高性能通信 |
+| HttpClientTransport + HttpRpcHandler | HTTP POST 短连接 |
+| WebSocketClientTransport / WebSocketServerHandler | WebSocket 长连接 |
+
+### HTTP POST
+
+服务端（集成到现有 HTTP Server）：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_http.*
+import stdx.net.http.*
+
+let httpServer = ServerBuilder().addr("0.0.0.0").port(8080).build()
+let rpcServer = JsonRpcServer(/* 无需 transport */)
+rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams()) })
+
+httpServer.route("/rpc", HttpRpcHandler(rpcServer))
+httpServer.start()
+```
+
+客户端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_http.*
+import stdx.net.http.*
+
+let httpClient = ClientBuilder().build()
+let transport = HttpClientTransport(httpClient, "http://localhost:8080/rpc")
+let rpcClient = JsonRpcClient(transport)
+rpcClient.start()
+```
+
+### WebSocket 长连接
+
+服务端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_websocket.*
+import stdx.net.http.*
+
+let httpServer = ServerBuilder().addr("0.0.0.0").port(8080).build()
+let rpcServer = JsonRpcServer(/* 无需 transport */)
+rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams()) })
+
+httpServer.route("/ws", WebSocketServerHandler(rpcServer))
+httpServer.start()
+```
+
+客户端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_websocket.*
+import stdx.net.http.*
+
+let httpClient = ClientBuilder().build()
+let transport = WebSocketClientTransport.connect(httpClient, "ws://localhost:8080/ws")
+let rpcClient = JsonRpcClient(transport)
+rpcClient.start()
+```
 
 ## API
 

@@ -19,3 +19,5 @@ jsonrpc/README.md
 jsonrpc_stdio/README.md
 jsonrpc_tcp/README.md
 jsonrpc_unix/README.md
+jsonrpc_http/README.md
+jsonrpc_websocket/README.md

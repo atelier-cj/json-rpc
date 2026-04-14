@@ -2,7 +2,7 @@ import std.fs.*
 import std.process.Process
 
 func copyReadme(): Unit {
-    let members = ["jsonrpc", "jsonrpc_stdio", "jsonrpc_tcp", "jsonrpc_unix"]
+    let members = ["jsonrpc", "jsonrpc_stdio", "jsonrpc_tcp", "jsonrpc_unix", "jsonrpc_http", "jsonrpc_websocket"]
     for (mem in members) {
         try {
             copy("./README.md", to: "./${mem}/README.md", overwrite: true)

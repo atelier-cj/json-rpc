@@ -1,0 +1,25 @@
+[package]
+  cjc-version = "1.0.0"
+  name = "jsonrpc_websocket"
+  organization = "ystyle"
+  description = "JSON-RPC WebSocket 传输层"
+  version = "0.1.0"
+  output-type = "static"
+  compile-option = ""
+  override-compile-option = ""
+  link-option = ""
+
+[dependencies]
+  "ystyle::jsonrpc" = "0.1.0"
+
+[target.x86_64-unknown-linux-gnu.bin-dependencies]
+  path-option = [ "${CANGJIE_STDX_PATH}" ]
+
+[target.x86_64-w64-mingw32.bin-dependencies]
+  path-option = [ "${CANGJIE_STDX_PATH}" ]
+
+[target.aarch64-linux-ohos.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+
+[target.x86_64-linux-ohos.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]

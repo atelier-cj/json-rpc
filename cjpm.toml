@@ -3,13 +3,17 @@
     "jsonrpc",
     "jsonrpc_stdio",
     "jsonrpc_tcp",
-    "jsonrpc_unix"
+    "jsonrpc_unix",
+    "jsonrpc_http",
+    "jsonrpc_websocket"
   ]
   build-members = [
     "jsonrpc",
     "jsonrpc_stdio",
     "jsonrpc_tcp",
-    "jsonrpc_unix"
+    "jsonrpc_unix",
+    "jsonrpc_http",
+    "jsonrpc_websocket"
   ]
   test-members = []
   compile-option = ""
