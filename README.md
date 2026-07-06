@@ -47,7 +47,7 @@ main() {
     client.start()
     
     let result = client.call<JsonValue, JsonValue>("echo",
-        params: Some(JsonValue.parse("{\"msg\":\"hello\"}")))
+        params: Some(JsonValue.Map(HashMap<String, JsonValue>())))
     match (result) {
         case Ok(v) => println(v.stringify())
         case Err(e) => println("错误: ${e}")
@@ -97,7 +97,7 @@ main() {
     client.start()
     
     let result = client.call<JsonValue, JsonValue>("echo",
-        params: Some(JsonValue.parse("{\"msg\":\"hello\"}")))
+        params: Some(JsonValue.Map(HashMap<String, JsonValue>())))
     // ...
     client.close()
 }

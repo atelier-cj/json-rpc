@@ -137,8 +137,8 @@ public class HttpRpcHelper {
         let builder = ctx.responseBuilder
         builder.status(status)
         builder.header("Content-Type", "application/json")
-        let errJson = "{\"error\":{\"code\":-32600,\"message\":\"${message}\"}}"
-        builder.body(errJson.toArray())
+        let resp = Response(RequestId.Int(0), error: JsonRpcError(-32600, message))
+        builder.body(serializeResponse(resp))
     }
 }
 
