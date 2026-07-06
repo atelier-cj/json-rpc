@@ -23,34 +23,12 @@ JSON-RPC 2.0 通用框架（仓颉语言）
 import ystyle::jsonrpc.*
 import ystyle::jsonrpc_stdio.*
 
-class EchoResult <: JsonSerializable & JsonDeserializable<EchoResult> {
-    public let msg: String
-    public init(msg!: String = "") { this.msg = msg }
-    public func toJson(w: JsonWriter): Unit {
-        w.writeBeginObject()
-        w.writeKey("msg")
-        w.writeValue(this.msg)
-        w.writeEndObject()
-    }
-    public static func fromJson(r: JsonReader): EchoResult {
-        r.readBeginObject()
-        var msg = ""
-        while (let Some(k) <- r.nextKey()) {
-            if (k == "msg") { msg = r.readValue<String>() }
-            else { r.skipValue() }
-        }
-        r.readEndObject()
-        EchoResult(msg)
-    }
-}
-
 main() {
     let transport = StdioTransport()
     let server = JsonRpcServer(transport)
     
     server.register("echo", { ctx =>
-        let params = ctx.getParams<EchoResult>() ?? EchoResult()
-        HandlerResult.ok(EchoResult(msg: params.msg))
+        HandlerResult.ok(ctx.getRawParams() ?? JsonValue.Null)
     })
     
     server.start()
@@ -63,50 +41,17 @@ main() {
 import ystyle::jsonrpc.*
 import ystyle::jsonrpc_stdio.*
 
-class EchoParams <: JsonSerializable {
-    public let msg: String
-    public init(msg: String) { this.msg = msg }
-    public func toJson(w: JsonWriter): Unit {
-        w.writeBeginObject()
-        w.writeKey("msg")
-        w.writeValue(this.msg)
-        w.writeEndObject()
-    }
-}
-
-class EchoResult <: JsonSerializable & JsonDeserializable<EchoResult> {
-    public let msg: String
-    public init(msg!: String = "") { this.msg = msg }
-    public func toJson(w: JsonWriter): Unit {
-        w.writeBeginObject()
-        w.writeKey("msg")
-        w.writeValue(this.msg)
-        w.writeEndObject()
-    }
-    public static func fromJson(r: JsonReader): EchoResult {
-        r.readBeginObject()
-        var msg = ""
-        while (let Some(k) <- r.nextKey()) {
-            if (k == "msg") { msg = r.readValue<String>() }
-            else { r.skipValue() }
-        }
-        r.readEndObject()
-        EchoResult(msg)
-    }
-}
-
 main() {
     let transport = StdioTransport()
     let client = JsonRpcClient(transport)
     client.start()
     
-    let result = client.call<EchoParams, EchoResult>("echo", params: Some(EchoParams("hello")))
+    let result = client.call<JsonValue, JsonValue>("echo",
+        params: Some(JsonValue.parse("{\"msg\":\"hello\"}")))
     match (result) {
-        case Ok(v) => println(v.msg)
+        case Ok(v) => println(v.stringify())
         case Err(e) => println("错误: ${e}")
     }
-    
-    client.notify<EchoParams>("log", params: Some(EchoParams("test")))
     
     client.close()
 }
@@ -114,31 +59,100 @@ main() {
 
 ## 传输层
 
-| 传输层 | 用途 |
-|--------|------|
-| StdioTransport | LSP、进程管道 |
-| TcpServerTransport / TcpClientTransport | 网络服务 |
-| UnixServerTransport / UnixClientTransport | 本地高性能通信 |
-| HttpClientTransport + HttpRpcHandler | HTTP POST 短连接 |
-| WebSocketClientTransport / WebSocketServerHandler | WebSocket 长连接 |
+| 包 | 类 | 用途 |
+|------|------|------|
+| jsonrpc_stdio | StdioTransport | LSP、进程管道 |
+| jsonrpc_tcp | TcpClientTransport / TcpServerTransport | 网络服务 |
+| jsonrpc_unix | UnixClientTransport / UnixServerTransport | 本地高性能通信 |
+| jsonrpc_http | HttpClientTransport / HttpRpcHandler / HttpRpcHelper | HTTP POST 短连接 |
+| jsonrpc_websocket | WebSocketClientTransport / WebSocketServerHandler | WebSocket 长连接 |
+
+### TCP
+
+服务端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_tcp.*
+
+main() {
+    let server = TcpServerTransport(port: 8080)
+    while (let Some(conn) <- server.acceptConnection()) {
+        let rpc = JsonRpcServer(conn)
+        rpc.register("echo", { ctx =>
+            HandlerResult.ok(ctx.getRawParams() ?? JsonValue.Null)
+        })
+        rpc.start()
+    }
+}
+```
+
+客户端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_tcp.*
+
+main() {
+    let transport = TcpClientTransport("127.0.0.1", 8080)
+    let client = JsonRpcClient(transport)
+    client.start()
+    
+    let result = client.call<JsonValue, JsonValue>("echo",
+        params: Some(JsonValue.parse("{\"msg\":\"hello\"}")))
+    // ...
+    client.close()
+}
+```
+
+### Unix Socket
+
+服务端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_unix.*
+
+main() {
+    let server = UnixServerTransport(path: "/tmp/rpc.sock")
+    while (let Some(conn) <- server.acceptConnection()) {
+        let rpc = JsonRpcServer(conn)
+        rpc.register("echo", { ctx =>
+            HandlerResult.ok(ctx.getRawParams() ?? JsonValue.Null)
+        })
+        rpc.start()
+    }
+}
+```
+
+客户端：
+```cangjie
+import ystyle::jsonrpc.*
+import ystyle::jsonrpc_unix.*
+
+main() {
+    let transport = UnixClientTransport(path: "/tmp/rpc.sock")
+    let client = JsonRpcClient(transport)
+    client.start()
+    // ...
+    client.close()
+}
+```
 
 ### HTTP POST
 
-服务端（集成到现有 HTTP Server）：
+集成到现有 HTTP Server：
 ```cangjie
 import ystyle::jsonrpc.*
 import ystyle::jsonrpc_http.*
 import stdx.net.http.*
 
 let httpServer = ServerBuilder().addr("0.0.0.0").port(8080).build()
-let rpcServer = JsonRpcServer(/* 无需 transport */)
-rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams()) })
+let rpcServer = JsonRpcServer(/* transport 由 handler 内部处理 */)
+rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams() ?? JsonValue.Null) })
 
 httpServer.route("/rpc", HttpRpcHandler(rpcServer))
 httpServer.start()
 ```
 
-客户端：
+客户端（复用现有 HTTP Client）：
 ```cangjie
 import ystyle::jsonrpc.*
 import ystyle::jsonrpc_http.*
@@ -152,15 +166,15 @@ rpcClient.start()
 
 ### WebSocket 长连接
 
-服务端：
+服务端（集成到现有 HTTP Server）：
 ```cangjie
 import ystyle::jsonrpc.*
 import ystyle::jsonrpc_websocket.*
 import stdx.net.http.*
 
 let httpServer = ServerBuilder().addr("0.0.0.0").port(8080).build()
-let rpcServer = JsonRpcServer(/* 无需 transport */)
-rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams()) })
+let rpcServer = JsonRpcServer(/* transport 由 handler 内部处理 */)
+rpcServer.register("echo", { ctx => HandlerResult.ok(ctx.getRawParams() ?? JsonValue.Null) })
 
 httpServer.route("/ws", WebSocketServerHandler(rpcServer))
 httpServer.start()

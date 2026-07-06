@@ -7,6 +7,7 @@ import std.collection.concurrent.*
 import stdx.encoding.json.stream.*
 
 public type Middleware = (RequestContext, () -> HandlerResult) -> HandlerResult
+public type Handler = (HandlerContext) -> HandlerResult
 
 public class RequestContext {
     public let request: Request
@@ -73,7 +74,7 @@ public class HandlerResult {
     }
 
     public static func ok<T>(value: T): HandlerResult where T <: JsonSerializable {
-        HandlerResult(result: JsonValue.fromObject(value))
+        HandlerResult(result: jsonValueOf(value))
     }
 
     public static func err(code: Int64, message: String): HandlerResult {
@@ -85,14 +86,14 @@ public class HandlerResult {
     }
 }
 
-public interface MethodHandler {
-    func handle(ctx: HandlerContext): HandlerResult
+private func jsonValueOf<T>(value: T): JsonValue where T <: JsonSerializable {
+    JsonValue.fromObject(value)
 }
 
 public class JsonRpcServer {
     private let transport: Transport
     private let middlewares: ArrayList<Middleware> = ArrayList<Middleware>()
-    private let handlers: ConcurrentHashMap<String, MethodHandler> = ConcurrentHashMap<String, MethodHandler>()
+    private let handlers: ConcurrentHashMap<String, Handler> = ConcurrentHashMap<String, Handler>()
     private let lock: Mutex = Mutex()
     private var running: Bool = false
 
@@ -104,12 +105,8 @@ public class JsonRpcServer {
         this.middlewares.add(middleware)
     }
 
-    public func register(method: String, handler: MethodHandler): Unit {
+    public func register(method: String, handler: Handler): Unit {
         this.handlers.add(method, handler)
-    }
-
-    public func register(method: String, handler: (HandlerContext) -> HandlerResult): Unit {
-        this.handlers.add(method, LambdaHandler(handler))
     }
 
     public func start(): Unit {
@@ -142,9 +139,9 @@ public func close(): Unit {
         }
     }
     
-    public func getHandlers(): HashMap<String, MethodHandler> {
+    public func getHandlers(): HashMap<String, Handler> {
         synchronized(this.lock) {
-            HashMap<String, MethodHandler>(this.handlers)
+            HashMap<String, Handler>(this.handlers)
         }
     }
     
@@ -256,7 +253,7 @@ public func close(): Unit {
     public func dispatch(method: String, ctx: HandlerContext): HandlerResult {
         match (this.handlers.get(method)) {
             case Some(handler) => try {
-                handler.handle(ctx)
+                handler(ctx)
             } catch (e: Exception) {
                 HandlerResult.err(ErrorCodes.INTERNAL_ERROR, "Internal error: ${e.message}")
             }
@@ -279,17 +276,5 @@ public func close(): Unit {
         let bytes = v.toBytes()
         let framed = encode(bytes)
         this.transport.send(framed)
-    }
-}
-
-private class LambdaHandler <: MethodHandler {
-    private let handlerFunc: (HandlerContext) -> HandlerResult
-
-    public init(handler: (HandlerContext) -> HandlerResult) {
-        this.handlerFunc = handler
-    }
-
-    public func handle(ctx: HandlerContext): HandlerResult {
-        this.handlerFunc(ctx)
     }
 }
