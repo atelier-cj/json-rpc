@@ -3,6 +3,7 @@ package ystyle::jsonrpc
 import jsonvalue.*
 import std.collection.*
 import std.sync.*
+import std.io.*
 import std.collection.concurrent.*
 import stdx.encoding.json.stream.*
 
@@ -96,6 +97,7 @@ public class JsonRpcServer {
     private let handlers: ConcurrentHashMap<String, Handler> = ConcurrentHashMap<String, Handler>()
     private let lock: Mutex = Mutex()
     private var running: Bool = false
+    private let recvBuffer = ByteBuffer()
 
     public init(transport: Transport) {
         this.transport = transport
@@ -160,12 +162,14 @@ public func close(): Unit {
     private func receiveLoop(): Unit {
         while (this.isRunning()) {
             match (this.transport.receive()) {
-                case Some(data) => match (decode(data)) {
-                    case Some(body) => spawn {
-                        => this.handleMessage(body)
+                case Some(data) =>
+                    recvBuffer.write(data)
+                    while (let Some((body, consumed)) <- decode(recvBuffer.bytes())) {
+                        spawn {
+                            => this.handleMessage(body)
+                        }
+                        recvBuffer.seek(SeekPosition.Current(consumed))
                     }
-                    case None => ()
-                }
                 case None => this.close()
             }
         }
@@ -177,6 +181,11 @@ public func close(): Unit {
         }
     }
 
+    private func sendError(id: ?RequestId, code: Int64, message: String): Unit {
+        let resp = Response(id: id, error: JsonRpcError(code, message))
+        this.sendResponse(resp)
+    }
+
     private func handleMessage(body: Array<Byte>): Unit {
         try {
             match (parseMessage(body)) {
@@ -185,8 +194,15 @@ public func close(): Unit {
                 case Message.BatchRequest(items) => this.handleBatchRequest(items)
                 case _ => ()
             }
+        } catch (e: JsonRpcException) {
+            this.sendError(None, e.code, e.message)
         } catch (e: Exception) {
-            ()
+            let msg = e.message
+            if (msg.startsWith("Invalid message") || msg.startsWith("Invalid jsonrpc") || msg.startsWith("Invalid batch") || msg == "Empty batch") {
+                this.sendError(None, ErrorCodes.INVALID_REQUEST, msg)
+            } else {
+                this.sendError(None, ErrorCodes.PARSE_ERROR, "Parse error")
+            }
         }
     }
 
@@ -194,13 +210,13 @@ public func close(): Unit {
         let ctx = RequestContext(req, this.transport)
         let handlerCtx = HandlerContext(params: req.params)
         let result = this.executeMiddlewares(ctx, handlerCtx, req.method)
-        let resp = Response(req.id, result: result.result, error: result.error)
+        let resp = Response(id: Some(req.id), result: result.result, error: result.error)
         this.sendResponse(resp)
     }
 
     private func handleNotification(notif: Notification): Unit {
-        let dummyRequest = Request(RequestId.Int(0), notif.method, params: notif.params)
-        let ctx = RequestContext(dummyRequest, this.transport)
+        let notifRequest = Request(RequestId.String("__notification__"), notif.method, params: notif.params)
+        let ctx = RequestContext(notifRequest, this.transport)
         let handlerCtx = HandlerContext(params: notif.params)
         this.executeMiddlewares(ctx, handlerCtx, notif.method)
     }
@@ -213,12 +229,14 @@ public func close(): Unit {
                     let ctx = RequestContext(req, this.transport)
                     let handlerCtx = HandlerContext(params: req.params)
                     let result = this.executeMiddlewares(ctx, handlerCtx, req.method)
-                    responses.add(Response(req.id, result: result.result, error: result.error))
+                    responses.add(Response(id: Some(req.id), result: result.result, error: result.error))
                 case Message.SingleNotification(notif) =>
-                    let dummyRequest = Request(RequestId.Int(0), notif.method, params: notif.params)
-                    let ctx = RequestContext(dummyRequest, this.transport)
+                    let notifRequest = Request(RequestId.String("__notification__"), notif.method, params: notif.params)
+                    let ctx = RequestContext(notifRequest, this.transport)
                     let handlerCtx = HandlerContext(params: notif.params)
                     this.executeMiddlewares(ctx, handlerCtx, notif.method)
+                case Message.InvalidRequest(err) =>
+                    responses.add(Response(id: None, error: err))
                 case _ => ()
             }
         }

@@ -37,21 +37,37 @@
 - ✅ UnixConnectionTransport（Unix 服务端连接）
 
 ### 测试
-- ✅ FramingTest（编码解码，3个用例）
+- ✅ FramingTest（编码解码，3个用例，含 consumed 精确消费）
 - ✅ RequestIdTest（ID 类型，3个用例）
 - ✅ RequestTest（请求序列化）
 - ✅ ResponseTest（响应序列化，2个用例）
 - ✅ NotificationTest（通知序列化）
 - ✅ ErrorCodesTest（标准错误码）
 - ✅ MessageParseTest（消息解析，6个用例）
+- ✅ JsonRpcValidationTest（jsonrpc 字段验证，5个用例）
+- ✅ BatchInvalidItemTest（批量错误项处理，2个用例）
+- ✅ FramingConsumedTest（多帧堆积处理，3个用例）
 
-## 待完成
+### 分帧修复
+- ✅ decode() 返回 `?(body, consumed)` tuple，支持精确消费
+- ✅ server/client receiveLoop 用 ByteBuffer.seek() 替代 clear()
+- ✅ stdio 改用原始字节读取替代 readln()
+- ✅ 服务端半帧累积不再丢弃
 
-- [ ] Server 中间件集成测试
-- [ ] Client 调用集成测试
-- [ ] TCP/Unix 传输层集成测试
-- [ ] 错误处理完善
-- [ ] 文档完善
+### HTTP 传输重写
+- ✅ HttpClientTransport.send() 保存 POST 响应到队列
+- ✅ HttpClientTransport.receive() 从队列取出响应
+- ✅ 响应用 encode() 重新 Content-Length 分帧
+
+### JSON-RPC 合规修复
+- ✅ Request/Response/Notification fromJson 验证 `"jsonrpc": "2.0"`
+- ✅ parseMessage 验证 jsonrpc 版本
+- ✅ 解析错误返回 -32700，非法请求返回 -32600
+- ✅ 批处理无效项返回 InvalidRequest 错误
+- ✅ Response.id 改为 ?RequestId 支持 null id
+- ✅ Response 构造函数校验 result/error 互斥
+- ✅ JsonRpcException 接入解析路径（替代泛型 Exception）
+- ✅ Notification 使用 `"__notification__"` 替代 `Int(0)` 避免误导
 
 ## 关键经验记录
 

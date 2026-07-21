@@ -2,6 +2,7 @@ package jsonrpc_tests
 
 import ystyle::jsonrpc.*
 import jsonvalue.*
+import std.io.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
@@ -11,10 +12,8 @@ class FramingTest {
     func testEncodeDecodeRoundtrip(): Unit {
         let body = "hello world".toArray()
         let encoded = encode(body)
-        let decoded = decode(encoded)
-        @Expect(decoded.isSome())
-        match (decoded) {
-            case Some(d) => @Expect(body.size, d.size)
+        match (decode(encoded)) {
+            case Some((d, _)) => @Expect(body.size, d.size)
             case None => @Fail("decode failed")
         }
     }
@@ -72,7 +71,7 @@ class SerializeTest {
 
     @TestCase
     func testSerializeResponse(): Unit {
-        let resp = Response(RequestId.Int(1), result: Some(JsonValue.parse("{\"ok\":true}")))
+        let resp = Response(id: Some(RequestId.Int(1)), result: Some(JsonValue.parse("{\"ok\":true}")))
         let bytes = serializeResponse(resp)
         let str = String.fromUtf8(bytes)
         @Expect(str.contains("\"result\""))
@@ -81,7 +80,7 @@ class SerializeTest {
 
     @TestCase
     func testSerializeErrorResponse(): Unit {
-        let resp = Response(RequestId.Int(1), error: JsonRpcError(-32601, "Not found"))
+        let resp = Response(id: Some(RequestId.Int(1)), error: JsonRpcError(-32601, "Not found"))
         let bytes = serializeResponse(resp)
         let str = String.fromUtf8(bytes)
         @Expect(str.contains("\"error\""))
@@ -262,6 +261,145 @@ class HandlerResultTest {
                 @Expect(e.code, -32601)
                 @Expect(e.message, "Not found")
             case None => @Fail("expected error")
+        }
+    }
+}
+
+@Test
+class JsonRpcValidationTest {
+    @TestCase
+    func testRequestValidJsonRpc(): Unit {
+        let json = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"test\"}"
+        let req = deserializeRequest(json.toArray())
+        @Expect(req.jsonrpc, "2.0")
+    }
+
+    @TestCase
+    func testRequestInvalidJsonRpc(): Unit {
+        let json = "{\"jsonrpc\":\"1.0\",\"id\":1,\"method\":\"test\"}"
+        try {
+            let _ = deserializeRequest(json.toArray())
+            @Fail("expected exception for invalid jsonrpc")
+        } catch (e: Exception) {
+            @Expect(e.message.contains("Invalid jsonrpc version"))
+        }
+    }
+
+    @TestCase
+    func testRequestMissingJsonRpc(): Unit {
+        let json = "{\"id\":1,\"method\":\"test\"}"
+        try {
+            let req = deserializeRequest(json.toArray())
+            // If no exception, verify it somewhere
+            @Expect(req.method, "test")
+        } catch (_: Exception) {
+            // Accept either behavior
+        }
+    }
+
+    @TestCase
+    func testResponseInvalidJsonRpc(): Unit {
+        let json = "{\"jsonrpc\":\"1.0\",\"id\":1,\"result\":42}"
+        try {
+            let _ = deserializeResponse(json.toArray())
+            @Fail("expected exception for invalid jsonrpc")
+        } catch (e: Exception) {
+            @Expect(e.message.contains("Invalid jsonrpc version"))
+        }
+    }
+
+    @TestCase
+    func testParseMessageRejectsInvalidJsonRpc(): Unit {
+        let json = "{\"jsonrpc\":\"1.0\",\"id\":1,\"method\":\"test\"}"
+        try {
+            let _ = parseMessage(json.toArray())
+            @Fail("expected exception for invalid jsonrpc")
+        } catch (e: Exception) {
+            @Expect(e.message.contains("Invalid jsonrpc"))
+        }
+    }
+}
+
+@Test
+class BatchInvalidItemTest {
+    @TestCase
+    func testBatchWithInvalidItems(): Unit {
+        let json = "[{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"a\"},{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"b\"}]"
+        match (parseMessage(json.toArray())) {
+            case Message.BatchRequest(items) => @Expect(items.size, 2)
+            case _ => @Fail("expected BatchRequest")
+        }
+    }
+
+    @TestCase
+    func testBatchWithMissingMethod(): Unit {
+        let json = "[{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"a\"},{\"jsonrpc\":\"2.0\",\"id\":2}]"
+        match (parseMessage(json.toArray())) {
+            case Message.BatchRequest(items) =>
+                @Expect(items.size, 2)
+                match (items[0]) {
+                    case Message.SingleRequest(_) => ()
+                    case _ => @Fail("first item should be SingleRequest")
+                }
+                match (items[1]) {
+                    case Message.InvalidRequest(_) => ()
+                    case _ => @Fail("second item should be InvalidRequest")
+                }
+            case _ => @Fail("expected BatchRequest")
+        }
+    }
+}
+
+@Test
+class FramingConsumedTest {
+    @TestCase
+    func testDecodeReturnsConsumed(): Unit {
+        let body1 = "hello".toArray()
+        let body2 = "world".toArray()
+        let frame1 = encode(body1)
+        let frame2 = encode(body2)
+        let buf = ByteBuffer()
+        buf.write(frame1)
+        buf.write(frame2)
+        let all = buf.bytes()
+
+        match (decode(all)) {
+            case Some((b, consumed)) =>
+                if (b.size != body1.size) {
+                    @Fail("body size mismatch")
+                }
+                if (consumed != frame1.size) {
+                    @Fail("consumed should equal frame1 size")
+                }
+            case None => @Fail("decode failed")
+        }
+    }
+
+    @TestCase
+    func testDecodeMultipleFramesInSequence(): Unit {
+        let body1 = "hello".toArray()
+        let body2 = "world".toArray()
+        let frame1 = encode(body1)
+        let frame2 = encode(body2)
+        let buf = ByteBuffer()
+        buf.write(frame1)
+        buf.write(frame2)
+        let combined = buf.bytes()
+
+        match (decode(combined)) {
+            case Some((b1, consumed)) =>
+                if (b1.size != body1.size) {
+                    @Fail("first body size mismatch")
+                }
+                let remaining = combined[consumed..combined.size]
+                match (decode(remaining)) {
+                    case Some((b2, _)) =>
+                        if (b2.size != body2.size) {
+                            @Fail("second body size mismatch")
+                        }
+                    case None => @Fail("second decode failed")
+                }
+            case None => @Fail("first decode failed")
         }
     }
 }

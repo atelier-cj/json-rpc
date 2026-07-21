@@ -24,7 +24,7 @@ public enum RequestId <: JsonSerializable & JsonDeserializable<RequestId> & Hash
                 case _ => r.skip()
             }
         }
-        throw Exception("Invalid RequestId: expected number or string")
+        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid RequestId: expected number or string")
     }
 
     public func hashCode(): Int64 {
@@ -81,7 +81,11 @@ public class Request <: JsonSerializable & JsonDeserializable<Request> {
         var params: ?JsonValue = None
         while (r.peek() != EndObject) {
             match (r.readName()) {
-                case "jsonrpc" => r.skip()
+                case "jsonrpc" =>
+                    let version = r.readValue<String>()
+                    if (version != "2.0") {
+                        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
+                    }
                 case "id" => id = RequestId.fromJson(r)
                 case "method" => method = r.readValue<String>()
                 case "params" => params = JsonValue.fromJson(r)
@@ -96,11 +100,17 @@ public class Request <: JsonSerializable & JsonDeserializable<Request> {
 @Derive[ToString]
 public class Response <: JsonSerializable & JsonDeserializable<Response> {
     public let jsonrpc: String = "2.0"
-    public let id: RequestId
+    public let id: ?RequestId
     public let result: ?JsonValue
     public let error: ?JsonRpcError
 
-    public init(id: RequestId, result!: ?JsonValue = None, error!: ?JsonRpcError = None) {
+    public init(id!: ?RequestId = None, result!: ?JsonValue = None, error!: ?JsonRpcError = None) {
+        if (result.isSome() && error.isSome()) {
+            throw Exception("Response cannot have both result and error")
+        }
+        if (result.isNone() && error.isNone()) {
+            throw Exception("Response must have either result or error")
+        }
         this.id = id
         this.result = result
         this.error = error
@@ -110,7 +120,10 @@ public class Response <: JsonSerializable & JsonDeserializable<Response> {
         w.startObject()
         w.writeName("jsonrpc").writeValue(this.jsonrpc)
         w.writeName("id")
-        this.id.toJson(w)
+        match (this.id) {
+            case Some(id) => id.toJson(w)
+            case None => w.writeNullValue()
+        }
         if (let Some(r) <- this.result) {
             w.writeName("result")
             r.toJson(w)
@@ -129,15 +142,25 @@ public class Response <: JsonSerializable & JsonDeserializable<Response> {
         var error: ?JsonRpcError = None
         while (r.peek() != EndObject) {
             match (r.readName()) {
-                case "jsonrpc" => r.skip()
-                case "id" => id = RequestId.fromJson(r)
+                case "jsonrpc" =>
+                    let version = r.readValue<String>()
+                    if (version != "2.0") {
+                        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
+                    }
+                case "id" =>
+                    if (r.peek().getOrThrow() == JsonToken.JsonNull) {
+                        r.skip()
+                        id = None
+                    } else {
+                        id = RequestId.fromJson(r)
+                    }
                 case "result" => result = JsonValue.fromJson(r)
                 case "error" => error = JsonRpcError.fromJson(r)
                 case _ => r.skip()
             }
         }
         r.endObject()
-        Response(id.getOrThrow(), result: result, error: error)
+        Response(id: id, result: result, error: error)
     }
 }
 
@@ -169,7 +192,11 @@ public class Notification <: JsonSerializable & JsonDeserializable<Notification>
         var params: ?JsonValue = None
         while (r.peek() != EndObject) {
             match (r.readName()) {
-                case "jsonrpc" => r.skip()
+                case "jsonrpc" =>
+                    let version = r.readValue<String>()
+                    if (version != "2.0") {
+                        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
+                    }
                 case "method" => method = r.readValue<String>()
                 case "params" => params = JsonValue.fromJson(r)
                 case _ => r.skip()

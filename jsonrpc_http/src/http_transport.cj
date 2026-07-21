@@ -11,10 +11,13 @@ public class HttpClientTransport <: Transport {
     private let url: String
     private let lock: Mutex = Mutex()
     private var closed: Bool = false
-    
+    private var responseQueue = ArrayList<Array<Byte>>()
+    private var cond: Condition
+
     public init(client: Client, url: String) {
         this.client = client
         this.url = url
+        this.cond = synchronized(this.lock) { this.lock.condition() }
     }
     
     public func send(data: Array<Byte>): Unit {
@@ -25,19 +28,42 @@ public class HttpClientTransport <: Transport {
         }
         
         try {
-            this.client.post(this.url, data)
+            match (decode(data)) {
+                case Some((body, _)) =>
+                    let resp = this.client.post(this.url, body)
+                    let buf = Array<Byte>(8192, repeat: 0)
+                    let len = resp.body.read(buf)
+                    if (len > 0) {
+                        let framed = encode(buf[0..len])
+                        synchronized(this.lock) {
+                            this.responseQueue.add(framed)
+                            this.cond.notifyAll()
+                        }
+                    }
+                case None => ()
+            }
         } catch (e: Exception) {
             ()
         }
     }
     
     public func receive(): ?Array<Byte> {
-        None
+        synchronized(this.lock) {
+            while (this.responseQueue.size == 0 && !this.closed) {
+                this.cond.wait(timeout: Duration.second)
+            }
+            if (this.responseQueue.size > 0) {
+                Some(this.responseQueue.remove(at: 0))
+            } else {
+                None
+            }
+        }
     }
     
     public func close(): Unit {
         synchronized(this.lock) {
             this.closed = true
+            this.cond.notifyAll()
         }
     }
     
@@ -92,7 +118,7 @@ public class HttpRpcHelper {
                 let requestCtx = RequestContext(req, HttpDummyTransport())
                 let handlerCtx = HandlerContext(params: req.params)
                 let result = rpcServer.executeMiddlewares(requestCtx, handlerCtx, req.method)
-                HttpRpcHelper.sendResponse(ctx, Response(req.id, result: result.result, error: result.error))
+                HttpRpcHelper.sendResponse(ctx, Response(id: Some(req.id), result: result.result, error: result.error))
             case Message.BatchRequest(items) =>
                 let responses = ArrayList<Response>()
                 for (item in items) {
@@ -101,7 +127,7 @@ public class HttpRpcHelper {
                             let requestCtx = RequestContext(r, HttpDummyTransport())
                             let handlerCtx = HandlerContext(params: r.params)
                             let res = rpcServer.executeMiddlewares(requestCtx, handlerCtx, r.method)
-                            responses.add(Response(r.id, result: res.result, error: res.error))
+                            responses.add(Response(id: Some(r.id), result: res.result, error: res.error))
                         case _ => ()
                     }
                 }
@@ -137,7 +163,7 @@ public class HttpRpcHelper {
         let builder = ctx.responseBuilder
         builder.status(status)
         builder.header("Content-Type", "application/json")
-        let resp = Response(RequestId.Int(0), error: JsonRpcError(-32600, message))
+        let resp = Response(id: None, error: JsonRpcError(-32600, message))
         builder.body(serializeResponse(resp))
     }
 }

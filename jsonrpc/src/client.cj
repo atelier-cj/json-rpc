@@ -140,9 +140,9 @@ public class JsonRpcClient {
             match (this.transport.receive()) {
                 case Some(data) =>
                     buffer.write(data)
-                    while (let Some(body) <- decode(buffer.bytes())) {
+                    while (let Some((body, consumed)) <- decode(buffer.bytes())) {
                         this.handleMessage(body)
-                        buffer.clear()
+                        buffer.seek(SeekPosition.Current(consumed))
                     }
                 case None => this.running = false
             }
@@ -164,9 +164,12 @@ public class JsonRpcClient {
     }
 
     private func handleResponse(resp: Response): Unit {
-        match (this.pendingRequests.get(resp.id)) {
-            case Some(pending) => pending.setResponse(resp)
-            case None => ()
+        match (resp.id) {
+            case Some(id) => match (this.pendingRequests.get(id)) {
+                case Some(pending) => pending.setResponse(resp)
+                case None => ()
+            }
+            case None => () // error response with no id, ignore
         }
     }
 }

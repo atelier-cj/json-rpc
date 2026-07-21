@@ -21,9 +21,12 @@ public class StdioTransport <: Transport {
     }
     
     public func receive(): ?Array<Byte> {
-        match (this.stdin.readln()) {
-            case Some(line) => line.toArray()
-            case None => None
+        let buffer = Array<Byte>(4096, repeat: 0)
+        let len = this.stdin.read(buffer)
+        if (len <= 0) {
+            None
+        } else {
+            buffer[0..len]
         }
     }
     

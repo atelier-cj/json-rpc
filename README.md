@@ -244,3 +244,7 @@ rpcClient.start()
 | ErrorCodes.METHOD_NOT_FOUND | -32601 |
 | ErrorCodes.INVALID_PARAMS | -32602 |
 | ErrorCodes.INTERNAL_ERROR | -32603 |
+
+## License
+
+MIT

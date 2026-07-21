@@ -19,7 +19,7 @@ public func encode(body: Array<Byte>): Array<Byte> {
     result
 }
 
-public func decode(content: Array<Byte>): ?Array<Byte> {
+public func decode(content: Array<Byte>): ?(Array<Byte>, Int64) {
     let headerEnd = findHeaderEnd(content)
     if (headerEnd < 0) {
         return None
@@ -33,7 +33,9 @@ public func decode(content: Array<Byte>): ?Array<Byte> {
     if (content.size < bodyStart + length) {
         return None
     }
-    content[bodyStart..(bodyStart + length)]
+    let body = content[bodyStart..(bodyStart + length)]
+    let consumed = bodyStart + length
+    Some((body, consumed))
 }
 
 private func findHeaderEnd(content: Array<Byte>): Int64 {

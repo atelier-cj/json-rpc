@@ -31,6 +31,7 @@ public enum Message {
     | SingleRequest(Request)
     | SingleResponse(Response)
     | SingleNotification(Notification)
+    | InvalidRequest(JsonRpcError)
     | BatchRequest(ArrayList<Message>)
     | BatchResponse(ArrayList<Response>)
 }
@@ -40,47 +41,67 @@ public func parseMessage(bytes: Array<Byte>): Message {
     if (v.isArray()) {
         let arr = v.asArray().getOrThrow()
         if (arr.size == 0) {
-            throw Exception("Empty batch")
+            throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Empty batch")
         }
         let first = arr[0]
         if (first.isMap()) {
             if (first["method"].isSome()) {
                 let items = ArrayList<Message>()
                 for (item in arr) {
-                    if (item["method"].isSome()) {
-                        if (item["id"].isSome()) {
-                            items.add(Message.SingleRequest(JsonValue.toObject<Request>(item)))
-                        } else {
-                            items.add(Message.SingleNotification(JsonValue.toObject<Notification>(item)))
+                    try {
+                        let hasValidVersion = match (item["jsonrpc"]) {
+                            case Some(JsonValue.String(ver)) => ver == "2.0"
+                            case _ => false
                         }
+                        if (!hasValidVersion) {
+                            items.add(Message.InvalidRequest(JsonRpcError(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version")))
+                        } else if (item["method"].isSome()) {
+                            if (item["id"].isSome()) {
+                                items.add(Message.SingleRequest(JsonValue.toObject<Request>(item)))
+                            } else {
+                                items.add(Message.SingleNotification(JsonValue.toObject<Notification>(item)))
+                            }
+                        } else {
+                            items.add(Message.InvalidRequest(JsonRpcError(ErrorCodes.INVALID_REQUEST, "Missing method")))
+                        }
+                    } catch (e: Exception) {
+                        items.add(Message.InvalidRequest(JsonRpcError(ErrorCodes.INVALID_REQUEST, "Invalid item: ${e.message}")))
                     }
                 }
                 Message.BatchRequest(items)
             } else if (first["result"].isSome() || first["error"].isSome()) {
                 let items = ArrayList<Response>()
                 for (item in arr) {
-                    items.add(JsonValue.toObject<Response>(item))
+                    try {
+                        items.add(JsonValue.toObject<Response>(item))
+                    } catch (e: Exception) {
+                        () // skip invalid items in batch response
+                    }
                 }
                 Message.BatchResponse(items)
             } else {
-                throw Exception("Invalid batch: first element must have method or result/error")
+                throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid batch: first element must have method or result/error")
             }
         } else {
-            throw Exception("Invalid batch: first element must be object")
+            throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid batch: first element must be object")
         }
     } else if (v.isMap()) {
-        if (v["method"].isSome()) {
-            if (v["id"].isSome()) {
-                Message.SingleRequest(JsonValue.toObject<Request>(v))
+        try {
+            if (v["method"].isSome()) {
+                if (v["id"].isSome()) {
+                    Message.SingleRequest(JsonValue.toObject<Request>(v))
+                } else {
+                    Message.SingleNotification(JsonValue.toObject<Notification>(v))
+                }
+            } else if (v["result"].isSome() || v["error"].isSome()) {
+                Message.SingleResponse(JsonValue.toObject<Response>(v))
             } else {
-                Message.SingleNotification(JsonValue.toObject<Notification>(v))
+                throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid message: missing method or result/error")
             }
-        } else if (v["result"].isSome() || v["error"].isSome()) {
-            Message.SingleResponse(JsonValue.toObject<Response>(v))
-        } else {
-            throw Exception("Invalid message: missing method or result/error")
+        } catch (e: Exception) {
+            throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid message: ${e.message}")
         }
     } else {
-        throw Exception("Invalid message: must be object or array")
+        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid message: must be object or array")
     }
 }
