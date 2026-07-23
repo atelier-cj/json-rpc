@@ -120,6 +120,13 @@ public class JsonRpcServer {
         }
     }
 
+    public func serve(): Unit {
+        synchronized(this.lock) {
+            this.running = true
+        }
+        this.receiveLoop()
+    }
+
 public func close(): Unit {
         synchronized(this.lock) {
             this.running = false

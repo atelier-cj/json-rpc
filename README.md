@@ -200,7 +200,8 @@ rpcClient.start()
 |------|------|
 | `register(method, handler)` | 注册方法处理器 |
 | `use(middleware)` | 添加中间件 |
-| `start()` | 启动服务 |
+| `start()` | 启动服务（后台线程，非阻塞） |
+| `serve()` | 启动服务（当前线程，阻塞至 close） |
 | `close()` | 关闭服务 |
 
 ### JsonRpcClient
