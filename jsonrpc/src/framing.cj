@@ -43,7 +43,7 @@ private func findHeaderEnd(content: Array<Byte>): Int64 {
         return -1
     }
     var i: Int64 = 0
-    let end = content.size - 3
+    let end = content.size - 4
     while (i <= end) {
         let c0 = content[i]
         let c1 = content[i + 1]
