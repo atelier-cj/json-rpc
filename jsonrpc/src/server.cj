@@ -168,18 +168,19 @@ public func close(): Unit {
     
     private func receiveLoop(): Unit {
         while (this.isRunning()) {
-            try {
-                match (this.transport.receive()) {
-                    case Some(data) =>
-                        recvBuffer.write(data)
+            match (this.transport.receive()) {
+                case Some(data) =>
+                    recvBuffer.write(data)
                     while (let Some((body, consumed)) <- decode(recvBuffer.bytes())) {
-                        this.handleMessage(body)
+                        try {
+                            this.handleMessage(body)
+                        } catch (e: Exception) {
+                            this.close()
+                            return
+                        }
                         recvBuffer.seek(SeekPosition.Current(consumed))
                     }
-                    case None => this.close()
-                }
-            } catch (e: Exception) {
-                this.close()
+                case None => this.close()
             }
         }
     }
