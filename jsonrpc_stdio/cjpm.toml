@@ -8,6 +8,11 @@
   compile-option = ""
   override-compile-option = ""
   link-option = ""
+  include = ["src"]
+  license = ["MIT"]
+  repository = "https://gitcode.com/ystyle/json-rpc.git"
+  tag = ["json-rpc", "stdio", "transport"]
+
 
 [dependencies]
   "ystyle::jsonrpc" = "0.4.0"
