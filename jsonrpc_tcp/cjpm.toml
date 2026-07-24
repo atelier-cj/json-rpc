@@ -3,14 +3,14 @@
   name = "jsonrpc_tcp"
   organization = "ystyle"
   description = "JSON-RPC TCP 传输层"
-  version = "0.3.0"
+  version = "0.4.0"
   output-type = "static"
   compile-option = ""
   override-compile-option = ""
   link-option = ""
 
 [dependencies]
-  "ystyle::jsonrpc" = "0.3.0"
+  "ystyle::jsonrpc" = "0.4.0"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
   path-option = ["${CANGJIE_STDX_PATH}"]
