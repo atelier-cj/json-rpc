@@ -93,14 +93,16 @@ private func jsonValueOf<T>(value: T): JsonValue where T <: JsonSerializable {
 
 public class JsonRpcServer {
     private let transport: Transport
+    private let framing: Framing
     private let middlewares: ArrayList<Middleware> = ArrayList<Middleware>()
     private let handlers: ConcurrentHashMap<String, Handler> = ConcurrentHashMap<String, Handler>()
     private let lock: Mutex = Mutex()
     private var running: Bool = false
     private let recvBuffer = ByteBuffer()
 
-    public init(transport: Transport) {
+    public init(transport: Transport, framing!: Framing = ContentLengthFraming()) {
         this.transport = transport
+        this.framing = framing
     }
 
     public func use(middleware: Middleware): Unit {
@@ -171,7 +173,7 @@ public func close(): Unit {
             match (this.transport.receive()) {
                 case Some(data) =>
                     recvBuffer.write(data)
-                    while (let Some((body, consumed)) <- decode(recvBuffer.bytes())) {
+                    while (let Some((body, consumed)) <- this.framing.decode(recvBuffer.bytes())) {
                         try {
                             this.handleMessage(body)
                         } catch (e: Exception) {
@@ -291,8 +293,7 @@ public func close(): Unit {
 
     private func sendResponse(resp: Response): Unit {
         let bytes = serializeResponse(resp)
-        let framed = encode(bytes)
-        this.transport.send(framed)
+        this.transport.send(this.framing.encode(bytes))
     }
 
     private func sendBatchResponse(responses: ArrayList<Response>): Unit {
@@ -302,7 +303,6 @@ public func close(): Unit {
         }
         let v = JsonValue.Array(arr)
         let bytes = v.toBytes()
-        let framed = encode(bytes)
-        this.transport.send(framed)
+        this.transport.send(this.framing.encode(bytes))
     }
 }

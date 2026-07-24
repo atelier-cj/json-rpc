@@ -40,14 +40,16 @@ public class PendingRequest {
 
 public class JsonRpcClient {
     private let transport: Transport
+    private let framing: Framing
     private let pendingRequests: ConcurrentHashMap<RequestId, PendingRequest> = ConcurrentHashMap<RequestId, PendingRequest>()
     private let lock: Mutex = Mutex()
     private var nextId: Int64 = 1
     private var running: Bool = false
     private var receiveThread: ?Future<Unit> = None
 
-    public init(transport: Transport) {
+    public init(transport: Transport, framing!: Framing = ContentLengthFraming()) {
         this.transport = transport
+        this.framing = framing
     }
 
     public func start(): Unit {
@@ -62,11 +64,9 @@ public class JsonRpcClient {
         let id = this.generateId()
         let req = Request(id, method, params: this.toJsonValue(params))
         let bytes = serializeRequest(req)
-        let framed = encode(bytes)
-
         let pending = PendingRequest(id)
         this.pendingRequests.add(id, pending)
-        this.transport.send(framed)
+        this.transport.send(this.framing.encode(bytes))
 
         match (pending.waitForResponse(timeout: timeout)) {
             case Some(resp) =>
@@ -95,8 +95,7 @@ public class JsonRpcClient {
     public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializable {
         let notif = Notification(method, params: this.toJsonValue(params))
         let bytes = serializeNotification(notif)
-        let framed = encode(bytes)
-        this.transport.send(framed)
+        this.transport.send(this.framing.encode(bytes))
     }
 
     public func notify(method: String): Unit {
@@ -140,7 +139,7 @@ public class JsonRpcClient {
             match (this.transport.receive()) {
                 case Some(data) =>
                     buffer.write(data)
-                    while (let Some((body, consumed)) <- decode(buffer.bytes())) {
+                    while (let Some((body, consumed)) <- this.framing.decode(buffer.bytes())) {
                         this.handleMessage(body)
                         buffer.seek(SeekPosition.Current(consumed))
                     }
