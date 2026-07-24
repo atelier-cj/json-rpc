@@ -3,14 +3,14 @@
   name = "jsonrpc_http"
   organization = "ystyle"
   description = "JSON-RPC HTTP 传输层"
-  version = "0.2.0"
+  version = "0.3.0"
   output-type = "static"
   compile-option = ""
   override-compile-option = ""
   link-option = ""
 
 [dependencies]
-  "ystyle::jsonrpc" = "0.2.0"
+  "ystyle::jsonrpc" = "0.3.0"
   "jsonvalue" = "1.0.1"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
