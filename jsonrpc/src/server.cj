@@ -204,6 +204,7 @@ public func close(): Unit {
                 case Message.SingleRequest(req) => this.handleRequest(req)
                 case Message.SingleNotification(notif) => this.handleNotification(notif)
                 case Message.BatchRequest(items) => this.handleBatchRequest(items)
+                case Message.SingleResponse(resp) => this.handleOutgoingResponse(resp)
                 case _ => ()
             }
         } catch (e: JsonRpcException) {
@@ -224,6 +225,14 @@ public func close(): Unit {
         let result = this.executeMiddlewares(ctx, handlerCtx, req.method)
         let resp = Response(id: Some(req.id), result: result.result, error: result.error)
         this.sendResponse(resp)
+    }
+
+    private func handleOutgoingResponse(resp: Response): Unit {
+        synchronized(this.requestLock) {
+            if (let Some(pending) <- this.pendingRequest) {
+                pending.setResponse(resp)
+            }
+        }
     }
 
     private func handleNotification(notif: Notification): Unit {
@@ -304,5 +313,37 @@ public func close(): Unit {
         let v = JsonValue.Array(arr)
         let bytes = v.toBytes()
         this.transport.send(this.framing.encode(bytes))
+    }
+
+    // ── Outgoing request support (for server-initiated requests like registerCapability) ──
+
+    private let requestLock: Mutex = Mutex()
+    private var pendingRequest: ?PendingRequest = None
+
+    public func request<T, R>(method: String, params!: ?T, timeout!: Duration = 30 * Duration.second): Result<R>
+        where T <: JsonSerializable, R <: JsonDeserializable<R> {
+        let req = Request(RequestId.Int(0), method, params: match (params) {
+            case Some(p) => Some(JsonValue.fromObject(p))
+            case None => None
+        })
+        let bytes = serializeRequest(req)
+        let pending = PendingRequest(RequestId.Int(0))
+        synchronized(this.requestLock) {
+            this.pendingRequest = pending
+        }
+        this.transport.send(this.framing.encode(bytes))
+        match (pending.waitForResponse(timeout: timeout)) {
+            case Some(resp) =>
+                synchronized(this.requestLock) { this.pendingRequest = None }
+                if (let Some(resultVal) <- resp.result) {
+                    try { Result.Ok(JsonValue.toObject<R>(resultVal)) }
+                    catch (e: Exception) { Result.Err("Failed to parse result: ${e.message}") }
+                } else if (let Some(error) <- resp.error) {
+                    Result.Err("[${error.code}] ${error.message}")
+                } else { Result.Err("Invalid response") }
+            case None =>
+                synchronized(this.requestLock) { this.pendingRequest = None }
+                Result.Err("Request timeout")
+        }
     }
 }

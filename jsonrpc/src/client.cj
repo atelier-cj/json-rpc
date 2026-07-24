@@ -2,6 +2,7 @@ package ystyle::jsonrpc
 
 import jsonvalue.*
 import std.collection.concurrent.*
+import std.collection.HashMap
 import std.sync.*
 import std.io.*
 import stdx.encoding.json.stream.*
@@ -38,6 +39,9 @@ public class PendingRequest {
     }
 }
 
+public type NotificationCallback = (Notification) -> Unit
+public type RequestCallback = (Request) -> ?JsonValue
+
 public class JsonRpcClient {
     private let transport: Transport
     private let framing: Framing
@@ -46,10 +50,26 @@ public class JsonRpcClient {
     private var nextId: Int64 = 1
     private var running: Bool = false
     private var receiveThread: ?Future<Unit> = None
+    private var notificationCb: ?NotificationCallback = None
+    private let requestHandlers: HashMap<String, RequestCallback> = HashMap<String, RequestCallback>()
 
     public init(transport: Transport, framing!: Framing = ContentLengthFraming()) {
         this.transport = transport
         this.framing = framing
+    }
+
+    public func setNotificationCallback(cb: NotificationCallback): Unit {
+        this.notificationCb = cb
+    }
+
+    public func registerRequestHandler(method: String, handler: RequestCallback): Unit {
+        this.requestHandlers.add(method, handler)
+    }
+
+    public func sendResponse(id: RequestId, result: JsonValue): Unit {
+        let resp = Response(id: Some(id), result: result)
+        let bytes = serializeResponse(resp)
+        this.transport.send(this.framing.encode(bytes))
     }
 
     public func start(): Unit {
@@ -155,10 +175,33 @@ public class JsonRpcClient {
                 case Message.BatchResponse(resps) => for (resp in resps) {
                     this.handleResponse(resp)
                 }
+                case Message.SingleRequest(req) => this.handleIncomingRequest(req)
+                case Message.SingleNotification(notif) =>
+                    if (let Some(cb) <- this.notificationCb) {
+                        cb(notif)
+                    }
                 case _ => ()
             }
         } catch (e: Exception) {
             ()
+        }
+    }
+
+    private func handleIncomingRequest(req: Request): Unit {
+        match (this.requestHandlers.get(req.method)) {
+            case Some(handler) =>
+                match (handler(req)) {
+                    case Some(result) =>
+                        let resp = Response(id: Some(req.id), result: result)
+                        let bytes = serializeResponse(resp)
+                        this.transport.send(this.framing.encode(bytes))
+                    case None => ()
+                }
+            case None =>
+                let error = JsonRpcError(-32601, "Method not found: ${req.method}")
+                let resp = Response(id: Some(req.id), error: error)
+                let bytes = serializeResponse(resp)
+                this.transport.send(this.framing.encode(bytes))
         }
     }
 
