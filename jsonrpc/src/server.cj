@@ -129,7 +129,17 @@ public class JsonRpcServer {
         this.receiveLoop()
     }
 
-public func close(): Unit {
+public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializable {
+        let notif = Notification(method, params: this.toJsonValue(params))
+        let bytes = serializeNotification(notif)
+        this.transport.send(this.framing.encode(bytes))
+    }
+
+    public func notify(method: String): Unit {
+        this.notify<JsonValue>(method, params: None)
+    }
+
+    public func close(): Unit {
         synchronized(this.lock) {
             this.running = false
         }
@@ -313,6 +323,13 @@ public func close(): Unit {
         let v = JsonValue.Array(arr)
         let bytes = v.toBytes()
         this.transport.send(this.framing.encode(bytes))
+    }
+
+    private func toJsonValue<T>(params: ?T): ?JsonValue where T <: JsonSerializable {
+        match (params) {
+            case Some(p) => Some(JsonValue.fromObject(p))
+            case None => None
+        }
     }
 
     // ── Outgoing request support (for server-initiated requests like registerCapability) ──
