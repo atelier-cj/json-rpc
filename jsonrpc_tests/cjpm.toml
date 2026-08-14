@@ -1,12 +1,12 @@
 [package]
   cjc-version = "1.0.0"
   name = "jsonrpc_tests"
-  version = "0.4.0"
+  version = "0.4.1"
   output-type = "executable"
 
 [dependencies]
   "ystyle::jsonrpc" = { path = "../jsonrpc" }
-  "jsonvalue" = "1.0.1"
+  "jsonvalue" = "1.1.0"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
   path-option = ["${CANGJIE_STDX_PATH}"]
