@@ -5,7 +5,8 @@
     "jsonrpc_tcp",
     "jsonrpc_unix",
     "jsonrpc_http",
-    "jsonrpc_websocket"
+    "jsonrpc_websocket",
+    "jsonrpc_tests"
   ]
   build-members = [
     "jsonrpc",
@@ -13,9 +14,12 @@
     "jsonrpc_tcp",
     "jsonrpc_unix",
     "jsonrpc_http",
-    "jsonrpc_websocket"
+    "jsonrpc_websocket",
+    "jsonrpc_tests"
   ]
-  test-members = []
+  test-members = [
+    "jsonrpc_tests"
+  ]
   compile-option = ""
   override-compile-option = ""
   link-option = ""
