@@ -2,7 +2,7 @@ package ystyle::jsonrpc
 
 import jsonvalue.*
 import std.collection.concurrent.*
-import std.collection.HashMap
+import std.collection.{HashMap, ArrayList}
 import std.sync.*
 import std.io.*
 import stdx.encoding.json.stream.*
@@ -50,7 +50,8 @@ public class JsonRpcClient {
     private var nextId: Int64 = 1
     private var running: Bool = false
     private var receiveThread: ?Future<Unit> = None
-    private var notificationCb: ?NotificationCallback = None
+    // 通知回调列表（set 覆盖、add 追加；接收循环遍历调用全部）
+    private let notificationCbs: ArrayList<NotificationCallback> = ArrayList<NotificationCallback>()
     private let requestHandlers: HashMap<String, RequestCallback> = HashMap<String, RequestCallback>()
 
     public init(transport: Transport, framing!: Framing = ContentLengthFraming()) {
@@ -58,8 +59,35 @@ public class JsonRpcClient {
         this.framing = framing
     }
 
+    /**
+     * 设置单个通知回调（覆盖已有回调）
+     */
     public func setNotificationCallback(cb: NotificationCallback): Unit {
-        this.notificationCb = cb
+        synchronized(this.lock) {
+            this.notificationCbs.clear()
+            this.notificationCbs.add(cb)
+        }
+    }
+
+    /**
+     * 设置多个通知回调（整体覆盖已有回调）
+     */
+    public func setNotificationCallback(cbs: ArrayList<NotificationCallback>): Unit {
+        synchronized(this.lock) {
+            this.notificationCbs.clear()
+            for (cb in cbs) {
+                this.notificationCbs.add(cb)
+            }
+        }
+    }
+
+    /**
+     * 追加一个通知回调（保留已有回调）
+     */
+    public func addNotificationCallback(cb: NotificationCallback): Unit {
+        synchronized(this.lock) {
+            this.notificationCbs.add(cb)
+        }
     }
 
     public func registerRequestHandler(method: String, handler: RequestCallback): Unit {
@@ -177,8 +205,16 @@ public class JsonRpcClient {
                 }
                 case Message.SingleRequest(req) => this.handleIncomingRequest(req)
                 case Message.SingleNotification(notif) =>
-                    if (let Some(cb) <- this.notificationCb) {
-                        cb(notif)
+                    // 遍历调用全部通知回调（支持多订阅）
+                    let cbs = synchronized(this.lock) {
+                        ArrayList<NotificationCallback>(this.notificationCbs)
+                    }
+                    for (cb in cbs) {
+                        try {
+                            cb(notif)
+                        } catch (e: Exception) {
+                            ()
+                        }
                     }
                 case _ => ()
             }
