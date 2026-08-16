@@ -5,6 +5,7 @@ import jsonvalue.*
 import std.io.*
 import std.sync.*
 import std.collection.ArrayList
+import stdx.encoding.json.stream.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
@@ -617,5 +618,116 @@ class NotificationCallbackSemanticsTest {
         }
         client.close()
         server.close()
+    }
+}
+
+@Test
+class AsyncHandlerTest {
+    @TestCase
+    func testAsyncHandlerResponds(): Unit {
+        // 验证 async handler：spawn 执行 + complete 回调发响应
+        let (a, b) = MemDuplexTransport.pair()
+        let client = JsonRpcClient(a, framing: NewlineFraming())
+        let server = JsonRpcServer(b, framing: NewlineFraming())
+        client.start()
+        server.start()
+
+        // async handler：延迟后 complete
+        server.registerAsync("async/echo", { ctx, complete =>
+            // handler 内部 spawn 异步任务后立即返回（不阻塞接收线程）
+            spawn {
+                complete(JsonValue.fromObject(AddResult(42)))
+            }
+        })
+
+        println("DIAG before call")
+        let result = client.call<JsonValue, JsonValue>("async/echo", params: None)
+        println("DIAG after call")
+        match (result) {
+            case Ok(v) =>
+                match (v["value"]) {
+                    case Some(JsonValue.Number(n)) => @Expect(n, 42.0)
+                    case _ => @Fail("expected number result")
+                }
+            case Err(e) => @Fail("async call failed: ${e}")
+        }
+        client.close()
+        server.close()
+    }
+
+    @TestCase
+    func testAsyncHandlerWithNestedRequest(): Unit {
+        // 验证 async handler 内嵌套请求不死锁：
+        // server A 的 async handler 收到请求后，向 server B 发同步请求，
+        // A 的接收线程不阻塞，B 的响应被 A 处理 → complete 回 A 的调用方
+        let (aHost, aPlugin) = MemDuplexTransport.pair()
+        let (bHost, bPlugin) = MemDuplexTransport.pair()
+        let clientA = JsonRpcClient(aHost, framing: NewlineFraming())
+        let serverA = JsonRpcServer(aPlugin, framing: NewlineFraming())
+        let clientB = JsonRpcClient(bHost, framing: NewlineFraming())
+        let serverB = JsonRpcServer(bPlugin, framing: NewlineFraming())
+        clientA.start()
+        serverA.start()
+        clientB.start()
+        serverB.start()
+
+        // B 提供普通同步 handler
+        serverB.register("svc/calc", { _ =>
+            HandlerResult.ok(JsonValue.fromObject(AddResult(7)))
+        })
+
+        // A 的 async handler：向 B 发同步请求（嵌套），完成回调回 A 的调用方
+        serverA.registerAsync("outer/call", { ctx, complete =>
+            spawn {
+                let nested = clientB.call<JsonValue, JsonValue>("svc/calc", params: None)
+                match (nested) {
+                    case Ok(v) => complete(v)
+                    case Err(e) =>
+                        complete(JsonValue.fromObject(AddResult(-1)))
+                }
+            }
+        })
+
+        let result = clientA.call<JsonValue, JsonValue>("outer/call", params: None)
+        match (result) {
+            case Ok(v) =>
+                match (v["value"]) {
+                    case Some(JsonValue.Number(n)) => @Expect(n, 7.0)
+                    case _ => @Fail("expected number result")
+                }
+            case Err(e) => @Fail("nested call failed: ${e}")
+        }
+        clientA.close()
+        serverA.close()
+        clientB.close()
+        serverB.close()
+    }
+}
+
+// 测试辅助：简单响应类型
+class AddResult <: JsonSerializable & JsonDeserializable<AddResult> {
+    public let value: Int64
+
+    public init(value: Int64) {
+        this.value = value
+    }
+
+    public func toJson(w: JsonWriter): Unit {
+        w.startObject()
+        w.writeName("value").writeValue(this.value)
+        w.endObject()
+    }
+
+    public static func fromJson(r: JsonReader): AddResult {
+        r.startObject()
+        var value: ?Int64 = None
+        while (r.peek() != EndObject) {
+            match (r.readName()) {
+                case "value" => value = r.readValue<Int64>()
+                case _ => r.skip()
+            }
+        }
+        r.endObject()
+        AddResult(value.getOrThrow())
     }
 }
