@@ -9,6 +9,9 @@ import stdx.encoding.json.stream.*
 
 public type Middleware = (RequestContext, () -> HandlerResult) -> HandlerResult
 public type Handler = (HandlerContext) -> HandlerResult
+// 异步 handler：接收上下文与完成回调；handler 在独立线程执行，
+// 完成后调用 complete(result) 发送响应（接收线程不阻塞，可继续处理其他消息）
+public type AsyncHandler = (HandlerContext, (JsonValue) -> Unit) -> Unit
 
 public class RequestContext {
     public let request: Request
@@ -96,6 +99,7 @@ public class JsonRpcServer {
     private let framing: Framing
     private let middlewares: ArrayList<Middleware> = ArrayList<Middleware>()
     private let handlers: ConcurrentHashMap<String, Handler> = ConcurrentHashMap<String, Handler>()
+    private let asyncHandlers: ConcurrentHashMap<String, AsyncHandler> = ConcurrentHashMap<String, AsyncHandler>()
     private let lock: Mutex = Mutex()
     private var running: Bool = false
     private let recvBuffer = ByteBuffer()
@@ -111,6 +115,19 @@ public class JsonRpcServer {
 
     public func register(method: String, handler: Handler): Unit {
         this.handlers.add(method, handler)
+    }
+
+    /**
+     * 注册异步处理器：handler 在独立线程执行，不阻塞接收线程
+     *
+     * 适合 handler 内需要再次发起请求（如转发/嵌套调用）的场景：
+     * 接收线程保持空闲以处理响应，避免单线程事件循环死锁。
+     *
+     * @param method 方法名
+     * @param handler (ctx, complete) -> Unit；complete(result) 发送响应
+     */
+    public func registerAsync(method: String, handler: AsyncHandler): Unit {
+        this.asyncHandlers.add(method, handler)
     }
 
     public func start(): Unit {
@@ -232,6 +249,17 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     private func handleRequest(req: Request): Unit {
         let ctx = RequestContext(req, this.transport)
         let handlerCtx = HandlerContext(params: req.params)
+        // 异步处理器：在接收线程调用，但约定 handler 内部自行 spawn 异步任务后
+        // 立即返回（不阻塞接收线程），任务完成后调用 complete 发响应。
+        // 这样接收线程保持空闲处理嵌套请求的响应，避免单线程事件循环死锁。
+        if (this.asyncHandlers.contains(req.method)) {
+            let handler = this.asyncHandlers[req.method]
+            handler(handlerCtx, { result =>
+                let resp = Response(id: Some(req.id), result: result)
+                this.sendResponse(resp)
+            })
+            return
+        }
         let result = this.executeMiddlewares(ctx, handlerCtx, req.method)
         let resp = Response(id: Some(req.id), result: result.result, error: result.error)
         this.sendResponse(resp)
