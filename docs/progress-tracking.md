@@ -111,3 +111,24 @@
 - workspace 内跨包版本号依赖：当目标版本未发布到中心仓时，cjpm 测试包解析失败 → jsonrpc_tests 用 path 依赖
 - cjpm 本地索引缓存（~/.cjpm/repository）只读时无法刷新新版本 → 需可写环境执行 `cjpm update` 后再发依赖包
 - 发版顺序：核心包先发，传输包依赖它 → 必须先发 jsonrpc 再发传输包
+
+## v0.6.0（2026-08-15）
+
+### 新增：异步处理器 registerAsync（JsonRpcServer）
+- `registerAsync(method, handler: AsyncHandler)`，`AsyncHandler = (HandlerContext, (JsonValue) -> Unit) -> Unit`
+- handler 在接收线程调用但约定**内部 spawn 异步任务后立即返回**；接收线程不阻塞，可处理嵌套请求的响应
+- 解决"handler 内再发同步请求（如 @Inject 代理调用远程服务）的单线程事件循环死锁"
+- 驱动方：cordis-cj @Inject 宏（服务代理跨插件调用）
+
+### 发版
+- jsonrpc 及 5 个传输包统一 0.6.0
+- jsonrpc_tests 不发中心仓，path 依赖本地核心包
+
+### 测试
+- 新增 AsyncHandlerTest 2 用例（spawn+complete、嵌套请求转发不死锁）
+- 共 41 用例全通过
+- mcp-cj 集成测试验证：切本地 jsonrpc 后 testclient 全过（零破坏）
+
+### 踩坑
+- async handler 的 handleRequest **不能自己 spawn**（那样 handler 仍在接收线程被调用阻塞）——必须约定 handler 内部 spawn 异步任务，handleRequest 直接调用 handler 立即返回
+- 测试中 spawn 内 sleep 后 complete 曾偶发超时；嵌套请求用例（client.call）更贴近真实场景且稳定
