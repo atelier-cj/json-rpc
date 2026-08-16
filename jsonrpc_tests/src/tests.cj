@@ -3,6 +3,8 @@ package jsonrpc_tests
 import ystyle::jsonrpc.*
 import jsonvalue.*
 import std.io.*
+import std.sync.*
+import std.collection.ArrayList
 import std.unittest.*
 import std.unittest.testmacro.*
 
@@ -401,5 +403,219 @@ class FramingConsumedTest {
                 }
             case None => @Fail("first decode failed")
         }
+    }
+}
+// ── 通知回调语义测试（set 覆盖 / set 多覆盖 / add 追加）──
+
+// 最小内存双工管道：A.send → B.receive，B.send → A.receive
+class MemPipe {
+    private let buf = ByteBuffer()
+    private let lock = Mutex()
+    private let cond: Condition
+    private var closed = false
+
+    init() {
+        this.cond = synchronized(this.lock) { this.lock.condition() }
+    }
+
+    func write(data: Array<Byte>): Unit {
+        synchronized(this.lock) {
+            buf.write(data)
+            this.cond.notifyAll()
+        }
+    }
+
+    func read(): ?Array<Byte> {
+        synchronized(this.lock) {
+            while (buf.remainLength == 0 && !closed) {
+                if (!this.cond.wait(timeout: 50 * Duration.millisecond)) {
+                    return None
+                }
+            }
+            if (buf.remainLength == 0) { return None }
+            let size = buf.remainLength
+            let data = Array<Byte>(size, repeat: 0)
+            buf.read(data)
+            Some(data)
+        }
+    }
+
+    public func close(): Unit {
+        synchronized(this.lock) {
+            closed = true
+            this.cond.notifyAll()
+        }
+    }
+}
+
+class MemDuplexTransport <: Transport {
+    private let out: MemPipe
+    private let input: MemPipe
+    private var closed = false
+
+    private init(out: MemPipe, input: MemPipe) {
+        this.out = out
+        this.input = input
+    }
+
+    static func pair(): (MemDuplexTransport, MemDuplexTransport) {
+        let ab = MemPipe()
+        let ba = MemPipe()
+        (MemDuplexTransport(ab, ba), MemDuplexTransport(ba, ab))
+    }
+
+    public func send(data: Array<Byte>): Unit {
+        this.out.write(data)
+    }
+
+    public func receive(): ?Array<Byte> {
+        this.input.read()
+    }
+
+    public func close(): Unit {
+        this.closed = true
+        this.input.close()
+    }
+
+    public func isClosed(): Bool {
+        this.closed
+    }
+}
+
+@Test
+class NotificationCallbackSemanticsTest {
+
+    private static func makePair(): (JsonRpcClient, JsonRpcServer) {
+        let (a, b) = MemDuplexTransport.pair()
+        let client = JsonRpcClient(a, framing: NewlineFraming())
+        let server = JsonRpcServer(b, framing: NewlineFraming())
+        client.start()
+        server.start()
+        (client, server)
+    }
+
+    @TestCase
+    func testSetSingleOverrides(): Unit {
+        let (client, server) = makePair()
+        let calls = ArrayList<String>()
+        let lock = Mutex()
+        // 第一个回调
+        client.setNotificationCallback({ notif =>
+            synchronized(lock) { calls.add("cb1") }
+        })
+        // set 单回调覆盖：替换为 cb2
+        client.setNotificationCallback({ notif =>
+            synchronized(lock) { calls.add("cb2") }
+        })
+        server.notify("test/notif")
+        // 等待回调触发
+        var waited = 0
+        while (true) {
+            synchronized(lock) {
+                if (calls.size > 0) { break }
+            }
+            if (waited > 50) { @Fail("callback not invoked"); break }
+            sleep(20 * Duration.millisecond)
+            waited++
+        }
+        synchronized(lock) {
+            @Expect(calls.size, 1)       // 只调用了 cb2（覆盖生效）
+            @Expect(calls[0], "cb2")
+        }
+        client.close()
+        server.close()
+    }
+
+    @TestCase
+    func testSetMultipleOverrides(): Unit {
+        let (client, server) = makePair()
+        let calls = ArrayList<String>()
+        let lock = Mutex()
+        client.setNotificationCallback({ notif =>
+            synchronized(lock) { calls.add("old") }
+        })
+        // set 多回调覆盖：整体替换为 [c1, c2]
+        let cbs = ArrayList<NotificationCallback>()
+        cbs.add({ notif => synchronized(lock) { calls.add("c1") } })
+        cbs.add({ notif => synchronized(lock) { calls.add("c2") } })
+        client.setNotificationCallback(cbs)
+        server.notify("test/notif")
+        var waited = 0
+        while (true) {
+            synchronized(lock) {
+                if (calls.size >= 2) { break }
+            }
+            if (waited > 50) { @Fail("callbacks not invoked"); break }
+            sleep(20 * Duration.millisecond)
+            waited++
+        }
+        synchronized(lock) {
+            @Expect(calls.size, 2)       // old 被整体替换，只剩 c1/c2
+            @Expect(calls[0], "c1")
+            @Expect(calls[1], "c2")
+        }
+        client.close()
+        server.close()
+    }
+
+    @TestCase
+    func testAddAppends(): Unit {
+        let (client, server) = makePair()
+        let calls = ArrayList<String>()
+        let lock = Mutex()
+        client.setNotificationCallback({ notif =>
+            synchronized(lock) { calls.add("first") }
+        })
+        // add 追加：保留 first，新增 second
+        client.addNotificationCallback({ notif =>
+            synchronized(lock) { calls.add("second") }
+        })
+        server.notify("test/notif")
+        var waited = 0
+        while (true) {
+            synchronized(lock) {
+                if (calls.size >= 2) { break }
+            }
+            if (waited > 50) { @Fail("callbacks not invoked"); break }
+            sleep(20 * Duration.millisecond)
+            waited++
+        }
+        synchronized(lock) {
+            @Expect(calls.size, 2)
+            @Expect(calls[0], "first")
+            @Expect(calls[1], "second")
+        }
+        client.close()
+        server.close()
+    }
+
+    @TestCase
+    func testAllCallbacksReceiveSameNotif(): Unit {
+        let (client, server) = makePair()
+        let methods = ArrayList<String>()
+        let lock = Mutex()
+        client.addNotificationCallback({ notif =>
+            synchronized(lock) { methods.add(notif.method) }
+        })
+        client.addNotificationCallback({ notif =>
+            synchronized(lock) { methods.add(notif.method) }
+        })
+        server.notify("evt/one")
+        var waited = 0
+        while (true) {
+            synchronized(lock) {
+                if (methods.size >= 2) { break }
+            }
+            if (waited > 50) { @Fail("callbacks not invoked"); break }
+            sleep(20 * Duration.millisecond)
+            waited++
+        }
+        synchronized(lock) {
+            @Expect(methods.size, 2)
+            @Expect(methods[0], "evt/one")
+            @Expect(methods[1], "evt/one")
+        }
+        client.close()
+        server.close()
     }
 }
