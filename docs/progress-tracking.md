@@ -90,3 +90,24 @@
 ### 编译器限制
 1. init 中不能在所有成员初始化前调用成员函数（如 receiveLoop）
 2. 需延迟启动接收线程（提供 start() 方法）
+## v0.5.0（2026-08-15）
+
+### 新增：通知回调多订阅（JsonRpcClient）
+- `setNotificationCallback(cb)` 单回调覆盖（原语义不变，向后兼容）
+- `setNotificationCallback(cbs)` 多回调覆盖（重载）
+- `addNotificationCallback(cb)` 追加
+- 内部改为 `ArrayList<NotificationCallback>`，接收循环遍历调用全部
+- 驱动方：cordis-cj 事件总线需要 log 与 events/emit 独立注册（原单回调覆盖导致丢失）
+
+### 发版
+- jsonrpc 及 5 个传输包统一 0.5.0，传输包依赖升级到 jsonrpc 0.5.0
+- jsonrpc_tests 不发中心仓，改用 path 依赖（引用未发布核心包场景）
+
+### 测试
+- 新增 NotificationCallbackSemanticsTest 4 用例（覆盖/多覆盖/追加/同通知全回调）
+- 共 39 用例全通过
+
+### 踩坑
+- workspace 内跨包版本号依赖：当目标版本未发布到中心仓时，cjpm 测试包解析失败 → jsonrpc_tests 用 path 依赖
+- cjpm 本地索引缓存（~/.cjpm/repository）只读时无法刷新新版本 → 需可写环境执行 `cjpm update` 后再发依赖包
+- 发版顺序：核心包先发，传输包依赖它 → 必须先发 jsonrpc 再发传输包
