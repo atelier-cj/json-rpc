@@ -133,7 +133,7 @@
 - async handler 的 handleRequest **不能自己 spawn**（那样 handler 仍在接收线程被调用阻塞）——必须约定 handler 内部 spawn 异步任务，handleRequest 直接调用 handler 立即返回
 - 测试中 spawn 内 sleep 后 complete 曾偶发超时；嵌套请求用例（client.call）更贴近真实场景且稳定
 
-## v0.7.0（开发中）
+## v0.7.0（2026-08-16）
 
 ### 新增：gjson 快速路由 + 流式直连反序列化
 - `message.cj` 重写：
