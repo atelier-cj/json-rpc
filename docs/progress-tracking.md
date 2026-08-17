@@ -161,4 +161,9 @@
 ### 踩坑 / 依赖
 - **发现 gjson-cj `validBytes` 对多元素数组误判非法**：`validarray` 在 `validcomma` 返回逗号位置后未前进，
   `[1,2]` 被判 false → 已在 gjson-cj 修复（状态机重写）并新增 `valid_test.cj`（9 用例），合入 gjson-cj master
-- gjson 修复需发版 1.2.1 后，jsonrpc 依赖从 path 改回注册表版本（当前 cjpm.toml 带 TODO 注释）
+- gjson-cj 发版 1.2.1（bump + tag + 中心仓 publish），jsonrpc 依赖改回注册表 `"gjson" = "1.2.1"`
+
+### 发版
+- jsonrpc 及 5 个传输包统一 0.7.0，传输包依赖升级到 jsonrpc 0.7.0
+- 全部包补充 authors 字段（此前缺失）
+- jsonrpc_tests 不发中心仓，path 依赖本地核心包
