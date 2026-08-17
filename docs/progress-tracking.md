@@ -132,3 +132,33 @@
 ### 踩坑
 - async handler 的 handleRequest **不能自己 spawn**（那样 handler 仍在接收线程被调用阻塞）——必须约定 handler 内部 spawn 异步任务，handleRequest 直接调用 handler 立即返回
 - 测试中 spawn 内 sleep 后 complete 曾偶发超时；嵌套请求用例（client.call）更贴近真实场景且稳定
+
+## v0.7.0（开发中）
+
+### 新增：gjson 快速路由 + 流式直连反序列化
+- `message.cj` 重写：
+  - `serialize*/deserialize*` 改为 `JsonWriter`/`JsonReader` 流式直连，去掉 jsonvalue DOM 中转
+    （原实现是 写→DOM→写 / DOM→序列化→重解析 的 3 遍扫描；实测 4.8KB 消息读侧 404µs→153µs，写侧约 2 倍提速）
+  - `parseMessage` 用 gjson 顶层浅扫描分类：`validBytes` 语法校验 + `method`/`id`/`result`/`error` 存在性判定，
+    命中类型后直接调现有 `fromJson(JsonReader(ByteBuffer(bytes)))` 流式反序列化，不建 DOM
+  - 批量：`parseBytes(bytes).array()` 一次扫描取各元素 raw（避免逐索引重复全量扫描），逐项流式解析
+- `server.cj`：
+  - `handleMessage` 增加快速路由：**无中间件时**，单条对象消息 method 未注册 → 用 gjson 取 method/id 直接回 -32601，
+    不解析完整 JSON（params 零触碰；大整数 id 用 raw 重建，不丢精度）
+  - `sendBatchResponse` 改 `JsonWriter` 流式写出（去掉 JsonValue.Array DOM 组装）
+- jsonvalue 降级为纯值类型（params/result），协议解析全程至多一次 json→JsonValue（仅 params 子树），未知方法零触碰
+- 依赖：jsonrpc 新增 gjson
+
+### 行为变化（有测试固定）
+- 尾随垃圾（`{"a":1} x`）从"静默忽略"改为 -32700（validBytes 严格校验）
+- 大整数 id（>2^53）精度修复：9007199254740993 不再被解析成 9007199254740992（原 jsonvalue Float64 DOM 往返丢失）
+- `method:null` / `method:123` 被 stdx `readValue<String>` 宽容转换为 "null"/"123"（新旧路径一致的既有语义）
+
+### 测试
+- 新增 LargeIdPrecisionTest 3 用例、ParseErrorSemanticsTest 6 用例、FastRouteTest 6 用例
+- 共 57 用例全通过（41 原有 + 16 新增）
+
+### 踩坑 / 依赖
+- **发现 gjson-cj `validBytes` 对多元素数组误判非法**：`validarray` 在 `validcomma` 返回逗号位置后未前进，
+  `[1,2]` 被判 false → 已在 gjson-cj 修复（状态机重写）并新增 `valid_test.cj`（9 用例），合入 gjson-cj master
+- gjson 修复需发版 1.2.1 后，jsonrpc 依赖从 path 改回注册表版本（当前 cjpm.toml 带 TODO 注释）
