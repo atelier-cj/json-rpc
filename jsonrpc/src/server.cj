@@ -1,6 +1,8 @@
 package ystyle::jsonrpc
 
+import gjson.*
 import jsonvalue.*
+import std.convert.*
 import std.collection.*
 import std.sync.*
 import std.io.*
@@ -226,6 +228,12 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     }
 
     private func handleMessage(body: Array<Byte>): Unit {
+        // 快速路由：无中间件时，未知方法的单条请求直接拒绝（不解析 params、零 jsonvalue 触碰）
+        if (this.middlewares.size == 0) {
+            if (this.tryFastRejectUnknownMethod(body)) {
+                return
+            }
+        }
         try {
             match (parseMessage(body)) {
                 case Message.SingleRequest(req) => this.handleRequest(req)
@@ -243,6 +251,51 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
             } else {
                 this.sendError(None, ErrorCodes.PARSE_ERROR, "Parse error")
             }
+        }
+    }
+
+    /**
+     * 快速路由（仅在无中间件时启用）：
+     * 单条对象消息、method 为字符串且未注册任何 handler 时，
+     * 用 gjson 浅扫描直接取 method/id 回 -32601，不解析完整 JSON。
+     * 返回 true 表示已处理（已发送错误响应），调用方应停止后续处理。
+     */
+    private func tryFastRejectUnknownMethod(body: Array<Byte>): Bool {
+        // 只处理顶层对象（批处理、响应、非法结构走常规路径）
+        var firstChar: Byte = 0
+        for (b in body) {
+            if (b != b' ' && b != b'\t' && b != b'\n' && b != b'\r') {
+                firstChar = b
+                break
+            }
+        }
+        if (firstChar != b'{') {
+            return false
+        }
+        let methodRes = getBytes(body, "method")
+        if (!methodRes.isString()) {
+            return false
+        }
+        let method = methodRes.string()
+        if (this.handlers.contains(method) || this.asyncHandlers.contains(method)) {
+            return false
+        }
+        // 未注册：仅当 id 能无歧义重建（整数或字符串）时快速拒绝；
+        // 通知（无 id）或 id 类型异常交给常规路径，保持原有 -32600/-32700 语义
+        let idRes = getBytes(body, "id")
+        var id: ?RequestId = None
+        if (idRes.isString()) {
+            id = Some(RequestId.String(idRes.str))
+        } else if (idRes.kind == Kind.Number) {
+            if (let Some(v) <- Int64.tryParse(idRes.raw)) {
+                id = Some(RequestId.Int(v))
+            }
+        }
+        match (id) {
+            case Some(rid) =>
+                this.sendError(Some(rid), ErrorCodes.METHOD_NOT_FOUND, "Method not found: ${method}")
+                true
+            case None => false
         }
     }
 
@@ -344,13 +397,17 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     }
 
     private func sendBatchResponse(responses: ArrayList<Response>): Unit {
-        let arr = ArrayList<JsonValue>()
+        // 流式直连写出（不经 jsonvalue DOM 中转）
+        let buffer = ByteBuffer()
+        let writer = JsonWriter(buffer)
+        writer.startArray()
         for (resp in responses) {
-            arr.add(JsonValue.fromObject(resp))
+            resp.toJson(writer)
         }
-        let v = JsonValue.Array(arr)
-        let bytes = v.toBytes()
-        this.transport.send(this.framing.encode(bytes))
+        writer.endArray()
+        writer.flush()
+        buffer.flush()
+        this.transport.send(this.framing.encode(buffer.bytes()))
     }
 
     private func toJsonValue<T>(params: ?T): ?JsonValue where T <: JsonSerializable {

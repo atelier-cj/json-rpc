@@ -246,6 +246,12 @@ rpcClient.start()
 | ErrorCodes.INVALID_PARAMS | -32602 |
 | ErrorCodes.INTERNAL_ERROR | -32603 |
 
+## 文档
+
+- [设计文档](docs/design.md)
+- [性能基准报告](docs/performance.md)（gjson 快速路由 + 流式直连反序列化）
+- [进度追踪](docs/progress-tracking.md)
+
 ## License
 
 MIT
