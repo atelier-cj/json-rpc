@@ -224,20 +224,35 @@ public class JsonRpcClient {
     }
 
     private func handleIncomingRequest(req: Request): Unit {
-        match (this.requestHandlers.get(req.method)) {
-            case Some(handler) =>
-                match (handler(req)) {
-                    case Some(result) =>
-                        let resp = Response(id: Some(req.id), result: result)
+        // 异步处理：请求 handler（如宿主转发其他插件的服务）可能阻塞等待
+        // 响应；在独立线程执行避免接收线程被占用——否则本连接的其他消息
+        // （如事件派发响应）无法读取，跨连接形成死锁
+        // （见 harness Phase 2：agent 等待 llm invoke 响应 ↔ 宿主等待
+        //   agent 的 dispatch 响应，两个接收线程互相阻塞）。
+        let self = this
+        spawn {
+            try {
+                match (self.requestHandlers.get(req.method)) {
+                    case Some(handler) =>
+                        match (handler(req)) {
+                            case Some(result) =>
+                                let resp = Response(id: Some(req.id), result: result)
+                                let bytes = serializeResponse(resp)
+                                self.transport.send(self.framing.encode(bytes))
+                            case None => ()
+                        }
+                    case None =>
+                        let error = JsonRpcError(-32601, "Method not found: ${req.method}")
+                        let resp = Response(id: Some(req.id), error: error)
                         let bytes = serializeResponse(resp)
-                        this.transport.send(this.framing.encode(bytes))
-                    case None => ()
+                        self.transport.send(self.framing.encode(bytes))
                 }
-            case None =>
-                let error = JsonRpcError(-32601, "Method not found: ${req.method}")
+            } catch (e: Exception) {
+                let error = JsonRpcError(-32603, "Handler error: ${e.message}")
                 let resp = Response(id: Some(req.id), error: error)
                 let bytes = serializeResponse(resp)
-                this.transport.send(this.framing.encode(bytes))
+                self.transport.send(self.framing.encode(bytes))
+            }
         }
     }
 
