@@ -167,3 +167,37 @@
 - jsonrpc 及 5 个传输包统一 0.7.0，传输包依赖升级到 jsonrpc 0.7.0
 - 全部包补充 authors 字段（此前缺失）
 - jsonrpc_tests 不发中心仓，path 依赖本地核心包
+
+## v0.7.1（2026-08-19）
+
+### 修复：JsonRpcClient 请求处理异步化（跨连接死锁）
+- `client.cj` 的 `handleIncomingRequest` 由同步执行改为 `spawn` 独立线程：
+  - **修复跨连接死锁**：请求 handler（如宿主转发其他插件服务）可能阻塞等待响应，同步执行会占用
+    接收线程 → 本连接的其他消息（如事件派发响应）无法读取，两个连接互相等待超时
+    （harness Phase 2：agent 等 llm invoke 响应 ↔ 宿主等 agent 的 dispatch 响应）
+  - **新增异常响应**：handler 抛异常时回 `-32603 Internal error`（修复前异常被 `handleMessage`
+    外层 catch 吞掉，请求方永远等不到响应直接超时）
+- 纯内部实现改动，公共 API 无变化（`registerRequestHandler` 签名不变）
+
+### 测试
+- 新增 `ClientAsyncHandlerTest` 2 用例：
+  - `testHandlerErrorReturnsInternalError`：client 收到请求 handler 抛异常 → server.request 收到 -32603
+  - `testNestedCallNoDeadlock`：client 收到请求后 handler 内同连接嵌套 `call` 不死锁
+- 共 59 用例全通过（57 原有 + 2 新增）
+
+### 发版
+- jsonrpc 及 5 个传输包统一 0.7.1，传输包依赖升级到 jsonrpc 0.7.1
+- jsonrpc_tests 不发中心仓，path 依赖本地核心包
+
+### 下游验证（AGENTS.md 新增规范）
+- AGENTS.md 新增：**json-rpc 修改（含发版前）必须同时运行 mcp-cj 和 lsp-cj 的测试**
+- mcp-cj：path 依赖本地 jsonrpc 编译通过 + test_e2e.sh（stdio 双工交互）CLIENT_EXIT=0
+- lsp-cj：4 子包 path 依赖本地 jsonrpc，lsp_tests 34/34 全绿（含 LspServerOutboundRequestTest——client 收到请求的新异步路径）
+- 验证后恢复下游 cjpm.toml 注册表依赖（均为 0.4.2）
+
+### 踩坑（E2E 在沙箱环境运行）
+- 原 test_e2e.sh 用 FIFO 依赖 /tmp，沙箱下 /tmp 跨命令不隔离 → 改 workspace 内 FIFO
+- FIFO 先读先写互相等待会死锁（server `< c2s` 阻塞等写端 ↔ client `< s2c` 阻塞等写端）：
+  需先 `exec 8<>s2c` / `exec 9<>c2s` 预打开两端再启动进程
+- 调试脚本路径用绝对路径 + `cd`（bash 工具 cwd 不在目标仓库）
+

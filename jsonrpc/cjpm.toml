@@ -3,7 +3,7 @@
   name = "jsonrpc"
   organization = "ystyle"
   description = "JSON-RPC 2.0 通用框架"
-  version = "0.7.0"
+  version = "0.7.1"
   output-type = "static"
   compile-option = ""
   override-compile-option = ""
