@@ -206,9 +206,11 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
                         try {
                             this.handleMessage(body)
                         } catch (e: Exception) {
-                            this.close()
-                            return
+                            // 单条消息处理异常不应杀死整个服务器：
+                            // 记录后跳过该消息，继续服务后续请求（否则一次坏消息=永久停机需重启）
+                            println("[jsonrpc] handleMessage error: " + e.message)
                         }
+                        // 无论处理成败都推进缓冲区，避免同一段字节反复解码
                         recvBuffer.seek(SeekPosition.Current(consumed))
                     }
                 case None => this.close()
