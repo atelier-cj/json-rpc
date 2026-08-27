@@ -14,6 +14,9 @@ public type Handler = (HandlerContext) -> HandlerResult
 // 异步 handler：接收上下文与完成回调；handler 在独立线程执行，
 // 完成后调用 complete(result) 发送响应（接收线程不阻塞，可继续处理其他消息）
 public type AsyncHandler = (HandlerContext, (JsonValue) -> Unit) -> Unit
+// 异步处理器（带错误回调）：handler 在独立线程执行，完成后可调用 complete(result) 返回成功响应，
+// 或调用 fail(error) 返回 JSON-RPC 错误响应（如 -32602 等）。
+public type AsyncHandlerErr = (HandlerContext, (JsonValue) -> Unit, (JsonRpcError) -> Unit) -> Unit
 
 public class RequestContext {
     public let request: Request
@@ -102,6 +105,7 @@ public class JsonRpcServer {
     private let middlewares: ArrayList<Middleware> = ArrayList<Middleware>()
     private let handlers: ConcurrentHashMap<String, Handler> = ConcurrentHashMap<String, Handler>()
     private let asyncHandlers: ConcurrentHashMap<String, AsyncHandler> = ConcurrentHashMap<String, AsyncHandler>()
+    private let asyncErrHandlers: ConcurrentHashMap<String, AsyncHandlerErr> = ConcurrentHashMap<String, AsyncHandlerErr>()
     private let lock: Mutex = Mutex()
     private var running: Bool = false
     private let recvBuffer = ByteBuffer()
@@ -130,6 +134,15 @@ public class JsonRpcServer {
      */
     public func registerAsync(method: String, handler: AsyncHandler): Unit {
         this.asyncHandlers.add(method, handler)
+    }
+
+    /**
+     * 注册异步处理器（支持错误响应）：
+     * handler 在独立线程执行，完成后调用 complete(result) 返回成功响应，
+     * 或调用 fail(error) 返回 JSON-RPC 错误响应。
+     */
+    public func registerAsyncErr(method: String, handler: AsyncHandlerErr): Unit {
+        this.asyncErrHandlers.add(method, handler)
     }
 
     public func start(): Unit {
@@ -279,7 +292,7 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
             return false
         }
         let method = methodRes.string()
-        if (this.handlers.contains(method) || this.asyncHandlers.contains(method)) {
+        if (this.handlers.contains(method) || this.asyncHandlers.contains(method) || this.asyncErrHandlers.contains(method)) {
             return false
         }
         // 未注册：仅当 id 能无歧义重建（整数或字符串）时快速拒绝；
@@ -307,6 +320,19 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
         // 异步处理器：在接收线程调用，但约定 handler 内部自行 spawn 异步任务后
         // 立即返回（不阻塞接收线程），任务完成后调用 complete 发响应。
         // 这样接收线程保持空闲处理嵌套请求的响应，避免单线程事件循环死锁。
+        if (this.asyncErrHandlers.contains(req.method)) {
+            let handler = this.asyncErrHandlers[req.method]
+            handler(handlerCtx,
+                { result =>
+                    let resp = Response(id: Some(req.id), result: result)
+                    this.sendResponse(resp)
+                },
+                { error =>
+                    let resp = Response(id: Some(req.id), error: error)
+                    this.sendResponse(resp)
+                })
+            return
+        }
         if (this.asyncHandlers.contains(req.method)) {
             let handler = this.asyncHandlers[req.method]
             handler(handlerCtx, { result =>

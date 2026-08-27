@@ -702,6 +702,49 @@ class AsyncHandlerTest {
         clientB.close()
         serverB.close()
     }
+
+    @TestCase
+    func testAsyncHandlerErrResponds(): Unit {
+        // 验证 registerAsyncErr：调用 fail(error) 返回 JSON-RPC 错误响应
+        let (a, b) = MemDuplexTransport.pair()
+        let client = JsonRpcClient(a, framing: NewlineFraming())
+        let server = JsonRpcServer(b, framing: NewlineFraming())
+        client.start()
+        server.start()
+
+        // 带错误回调的 async handler：spawn 后 fail(-32602)
+        server.registerAsyncErr("async/err", { ctx, complete, fail =>
+            spawn {
+                fail(JsonRpcError(-32602, "Invalid params"))
+            }
+        })
+        // 同时验证 success 路径
+        server.registerAsyncErr("async/ok", { ctx, complete, fail =>
+            spawn {
+                complete(JsonValue.fromObject(AddResult(9)))
+            }
+        })
+
+        // 错误路径
+        let errResult = client.call<JsonValue, JsonValue>("async/err", params: None)
+        match (errResult) {
+            case Ok(_) => @Fail("expected error response")
+            case Err(e) => @Expect(e.contains("-32602"), true)
+        }
+
+        // 成功路径
+        let okResult = client.call<JsonValue, JsonValue>("async/ok", params: None)
+        match (okResult) {
+            case Ok(v) =>
+                match (v["value"]) {
+                    case Some(JsonValue.Number(n)) => @Expect(n, 9.0)
+                    case _ => @Fail("expected number result")
+                }
+            case Err(e) => @Fail("async ok call failed: ${e}")
+        }
+        client.close()
+        server.close()
+    }
 }
 
 // 测试辅助：简单响应类型
