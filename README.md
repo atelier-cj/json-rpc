@@ -6,13 +6,13 @@ JSON-RPC 2.0 通用框架（仓颉语言）
 
 ```toml
 [dependencies]
-  "ystyle::jsonrpc" = "0.7.2"
+  "ystyle::jsonrpc" = "0.7.3"
   # 按需选择传输层
-  "ystyle::jsonrpc_stdio" = "0.7.2"      # Stdio
-  "ystyle::jsonrpc_tcp" = "0.7.2"        # TCP
-  "ystyle::jsonrpc_unix" = "0.7.2"       # Unix Socket
-  "ystyle::jsonrpc_http" = "0.7.2"       # HTTP POST
-  "ystyle::jsonrpc_websocket" = "0.7.2"  # WebSocket
+  "ystyle::jsonrpc_stdio" = "0.7.3"      # Stdio
+  "ystyle::jsonrpc_tcp" = "0.7.3"        # TCP
+  "ystyle::jsonrpc_unix" = "0.7.3"       # Unix Socket
+  "ystyle::jsonrpc_http" = "0.7.3"       # HTTP POST
+  "ystyle::jsonrpc_websocket" = "0.7.3"  # WebSocket
 ```
 
 ## 快速开始

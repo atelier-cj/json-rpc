@@ -233,3 +233,9 @@
   直接贴定义代码，枚举（Message/Result）给定义；字段属协议标准不赘述
 - 新增「双向 RPC（双工）」用法示例；安装版本号 0.1.0 → 0.7.2
 - 子包 README 为 build.cj `stagePreBuild` 从根目录覆盖生成（.gitignore），只改根 README.md 即可
+
+### 发版
+- jsonrpc 及 5 个传输包统一 0.7.3，传输包依赖升级到 jsonrpc 0.7.3
+- jsonrpc_tests 不发中心仓，path 依赖本地核心包
+- 下游验证（发版前，path 依赖本地 jsonrpc）：mcp-cj build + testclient 端到端全过、lsp-cj 34/34 全绿；验证后恢复下游注册表依赖
+- 发布顺序：核心 jsonrpc 先发 → `cjpm update` 刷新缓存 → 再发 5 个传输包
