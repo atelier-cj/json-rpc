@@ -201,3 +201,23 @@
   需先 `exec 8<>s2c` / `exec 9<>c2s` 预打开两端再启动进程
 - 调试脚本路径用绝对路径 + `cd`（bash 工具 cwd 不在目标仓库）
 
+
+## v0.7.3（2026-08-27，acp-cj 需求驱动）
+
+### 新增：registerAsyncErr —— 异步 handler 支持 JSON-RPC 错误响应
+- `server.cj` 新增 `AsyncHandlerErr` 类型与 `registerAsyncErr(method, handler)`：
+  - handler 签名 `(HandlerContext, (JsonValue) -> Unit /*complete*/, (JsonRpcError) -> Unit /*fail*/) -> Unit`
+  - `complete(result)` 返回成功响应；`fail(error)` 返回 JSON-RPC 错误响应（如 -32602）
+- 背景：acp-cj 的 `session/prompt` 是长时异步 handler，未知 sessionId / 无 handler 等错误
+  需通过 JSON-RPC error 返回；原 `registerAsync` 的 complete 只支持 result。
+- 纯增量 API，不改变现有 `registerAsync` 行为（不破坏性变更）。
+- `tryFastRejectUnknownMethod` 同步检查 `asyncErrHandlers`，避免误判未知方法。
+
+### 测试
+- 新增 `testAsyncHandlerErrResponds`：fail(-32602) 路径 + complete 成功路径双验证
+- jsonrpc_tests 60/60 全绿（59 原有 + 1 新增）
+
+### 下游验证（AGENTS.md 规范）
+- mcp-cj：build success
+- lsp-cj：lsp_tests 34/34 全绿
+- acp-cj（新增下游）：32/32 全绿，端到端（client ↔ server 代理链 ↔ opencode）通过
