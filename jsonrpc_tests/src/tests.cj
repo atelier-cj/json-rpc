@@ -774,3 +774,40 @@ class AddResult <: JsonSerializable & JsonDeserializable<AddResult> {
         AddResult(value.getOrThrow())
     }
 }
+
+@Test
+class HandlerContextRequestIdTest {
+    @TestCase
+    func testHandlerContextHasRequestId(): Unit {
+        // 验证请求 handler 的 HandlerContext.requestId 能拿到 JSON-RPC id
+        let (a, b) = MemDuplexTransport.pair()
+        let client = JsonRpcClient(a, framing: NewlineFraming())
+        let server = JsonRpcServer(b, framing: NewlineFraming())
+        client.start()
+        server.start()
+
+        let seen = ArrayList<RequestId>()
+        server.register("ctx/rid", { ctx =>
+            match (ctx.requestId) { case Some(id) => seen.add(id); case None => () }
+            HandlerResult.ok(JsonValue.fromObject(AddResult(42)))
+        })
+
+        let result = client.call<JsonValue, JsonValue>("ctx/rid", params: None)
+        match (result) {
+            case Ok(v) =>
+                match (v["value"]) {
+                    case Some(JsonValue.Number(n)) => @Expect(n, 42.0)
+                    case _ => @Fail("expected number")
+                }
+            case Err(e) => @Fail("call failed: ${e}")
+        }
+        // 自动 id 从 1 开始，requestId 应非空且为 Int
+        @Expect(seen.size, 1)
+        match (seen[0]) {
+            case RequestId.Int(id) => @Expect(id >= 1, true)
+            case _ => @Fail("requestId should be RequestId.Int")
+        }
+        client.close()
+        server.close()
+    }
+}

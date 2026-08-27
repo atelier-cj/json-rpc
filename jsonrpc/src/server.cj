@@ -30,9 +30,12 @@ public class RequestContext {
 
 public class HandlerContext {
     private let params: ?JsonValue
+    // 当前请求的 JSON-RPC id（仅请求消息有值；通知为 None）
+    public let requestId: ?RequestId
 
-    public init(params!: ?JsonValue = None) {
+    public init(params!: ?JsonValue = None, requestId!: ?RequestId = None) {
         this.params = params
+        this.requestId = requestId
     }
 
     public func getParam(key: String): ?JsonValue {
@@ -316,7 +319,7 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
 
     private func handleRequest(req: Request): Unit {
         let ctx = RequestContext(req, this.transport)
-        let handlerCtx = HandlerContext(params: req.params)
+        let handlerCtx = HandlerContext(params: req.params, requestId: Some(req.id))
         // 异步处理器：在接收线程调用，但约定 handler 内部自行 spawn 异步任务后
         // 立即返回（不阻塞接收线程），任务完成后调用 complete 发响应。
         // 这样接收线程保持空闲处理嵌套请求的响应，避免单线程事件循环死锁。
@@ -367,7 +370,7 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
             match (item) {
                 case Message.SingleRequest(req) =>
                     let ctx = RequestContext(req, this.transport)
-                    let handlerCtx = HandlerContext(params: req.params)
+                    let handlerCtx = HandlerContext(params: req.params, requestId: Some(req.id))
                     let result = this.executeMiddlewares(ctx, handlerCtx, req.method)
                     responses.add(Response(id: Some(req.id), result: result.result, error: result.error))
                 case Message.SingleNotification(notif) =>
