@@ -212,10 +212,13 @@
   需通过 JSON-RPC error 返回；原 `registerAsync` 的 complete 只支持 result。
 - 纯增量 API，不改变现有 `registerAsync` 行为（不破坏性变更）。
 - `tryFastRejectUnknownMethod` 同步检查 `asyncErrHandlers`，避免误判未知方法。
+- `HandlerContext` 新增公开字段 `requestId: ?RequestId`（请求消息为 Some(id)，通知为 None）：
+  - 供 `$/cancel_request` 按请求 id 取消等场景使用；纯增量，`init(params!)` 旧调用不变（requestId 默认 None）
 
 ### 测试
 - 新增 `testAsyncHandlerErrResponds`：fail(-32602) 路径 + complete 成功路径双验证
-- jsonrpc_tests 60/60 全绿（59 原有 + 1 新增）
+- 新增 `HandlerContextRequestIdTest.testHandlerContextHasRequestId`：请求 handler 能拿到 RequestId
+- jsonrpc_tests 61/61 全绿（59 原有 + 2 新增）
 
 ### 下游验证（AGENTS.md 规范）
 - mcp-cj：build success
