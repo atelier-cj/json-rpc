@@ -224,3 +224,12 @@
 - mcp-cj：build success
 - lsp-cj：lsp_tests 34/34 全绿
 - acp-cj（新增下游）：32/32 全绿，端到端（client ↔ server 代理链 ↔ opencode）通过
+
+### 文档：README API 部分补全（根 README.md，build.cj 自动同步子包）
+- 发现近月发版新增 API（v0.5.0 通知多订阅 / v0.6.0 registerAsync / v0.7.3 registerAsyncErr+requestId）
+  与双向 RPC 能力（v0.4.x 起 registerRequestHandler/request/notify）从未写入 README API 部分
+- 重写 `## API`：按源码文件分组（types/message/framing/transport/exception/server/client），
+  类的方法用表格列签名，接口（Transport/Framing）与类型别名（Handler/AsyncHandler/AsyncHandlerErr/Middleware）
+  直接贴定义代码，枚举（Message/Result）给定义；字段属协议标准不赘述
+- 新增「双向 RPC（双工）」用法示例；安装版本号 0.1.0 → 0.7.2
+- 子包 README 为 build.cj `stagePreBuild` 从根目录覆盖生成（.gitignore），只改根 README.md 即可
