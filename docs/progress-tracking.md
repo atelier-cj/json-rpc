@@ -202,6 +202,28 @@
 - 调试脚本路径用绝对路径 + `cd`（bash 工具 cwd 不在目标仓库）
 
 
+## v0.7.4（2026-09-02，忆时塔 OOM 挂起修复）
+
+### 修复：receiveLoop 边界捕获系统级 Error —— OOM 不再杀接收循环协程
+- 背景：忆时塔（chronomem）写满 memtable 触发 flush 时 OOM，`OutOfMemoryError` 是
+  `Error` 层级（与 `Exception` 平行，非子类），`receiveLoop` 原只 `catch (e: Exception)`
+  → Error 逃逸杀接收循环协程 → 所有请求 30s 超时 = MCP 永久挂起（需重启恢复）。
+- `server.cj` receiveLoop 两处兜底：
+  - `handleMessage` 调用点：`catch (e: Error)` 只打印 `[jsonrpc] handleMessage system error`
+    后继续循环（与 Exception 同级语义：坏消息跳过，不杀服务器）
+  - 外层 `match transport.receive()`：`catch (e: Error)` 兜底 receive/缓冲写入路径
+- 设计取舍：仓颉规范 Error 属系统级、不应被业务层吞掉（runBatch 仍不吞）——但接收循环
+  是服务存活性边界，Error 逃逸 = 永久停机，此处只记录不退出（xisp/cjxt 同款先例）。
+- 注：OOM 本体由 badger-cj v1.6.13 的 WritePipeline.loop Error 边界 + 忆时塔内存
+  优化解决；jsonrpc 本修复保证即便有系统级错误也不致 MCP 挂死。
+
+### 测试
+- jsonrpc_tests 61/61 全绿（既有用例，Error 捕获为增量防御，无行为破坏）
+
+### 下游验证
+- 本地 path 依赖（chronomem cjpm.toml `[replace]`）验证：chronomem 二进制含
+  `receiveLoop system error` 字符串；badger-cj 347/347、mcp-cj 依赖链构建通过
+
 ## v0.7.3（2026-08-27，acp-cj 需求驱动）
 
 ### 新增：registerAsyncErr —— 异步 handler 支持 JSON-RPC 错误响应

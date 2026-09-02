@@ -215,21 +215,31 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     
     private func receiveLoop(): Unit {
         while (this.isRunning()) {
-            match (this.transport.receive()) {
-                case Some(data) =>
-                    recvBuffer.write(data)
-                    while (let Some((body, consumed)) <- this.framing.decode(recvBuffer.bytes())) {
-                        try {
-                            this.handleMessage(body)
-                        } catch (e: Exception) {
-                            // 单条消息处理异常不应杀死整个服务器：
-                            // 记录后跳过该消息，继续服务后续请求（否则一次坏消息=永久停机需重启）
-                            println("[jsonrpc] handleMessage error: " + e.message)
+            try {
+                match (this.transport.receive()) {
+                    case Some(data) =>
+                        recvBuffer.write(data)
+                        while (let Some((body, consumed)) <- this.framing.decode(recvBuffer.bytes())) {
+                            try {
+                                this.handleMessage(body)
+                            } catch (e: Exception) {
+                                // 单条消息处理异常不应杀死整个服务器：
+                                // 记录后跳过该消息，继续服务后续请求（否则一次坏消息=永久停机需重启）
+                                println("[jsonrpc] handleMessage error: " + e.message)
+                            } catch (e: Error) {
+                                // 系统级错误（如 OOM 的 OutOfMemoryError）同样不许逃逸杀接收循环：
+                                // 记录后继续服务后续请求。否则一次资源耗尽 = 接收协程死亡 =
+                                // 所有请求永久超时（生产忆时塔挂起症状，需重启才恢复）。
+                                println("[jsonrpc] handleMessage system error: " + e.message)
+                            }
+                            // 无论处理成败都推进缓冲区，避免同一段字节反复解码
+                            recvBuffer.seek(SeekPosition.Current(consumed))
                         }
-                        // 无论处理成败都推进缓冲区，避免同一段字节反复解码
-                        recvBuffer.seek(SeekPosition.Current(consumed))
-                    }
-                case None => this.close()
+                    case None => this.close()
+                }
+            } catch (e: Error) {
+                // 接收外层（transport.receive / 缓冲写入）的系统级错误同样只记录不退出
+                println("[jsonrpc] receiveLoop system error: " + e.message)
             }
         }
     }
