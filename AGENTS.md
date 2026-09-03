@@ -16,6 +16,12 @@
 - 测试出现语法问题不通过时，可以使用`cangjie_docs`相关工具在手册或lib std/stdx查找解决方法
 - **json-rpc 修改（含发版前）必须同时运行依赖它的下游仓库测试**：`mcp-cj` 和 `lsp-cj` 的 `cjpm test` 必须通过。修改了 jsonrpc 行为/API 后，先在本地用 path 依赖或已验证的版本号跑通这两个下游仓库的测试，再发版
 
+## 发布约定（中心仓）
+
+- 只发布**库包**：`jsonrpc`（核心）+ 5 个传输包 `jsonrpc_websocket` / `jsonrpc_http` / `jsonrpc_unix` / `jsonrpc_tcp` / `jsonrpc_stdio`，各包版本号保持一致
+- **测试包不需要发布到中心仓**：`jsonrpc_tests` 仅用于本地构建与集成验证（`cjpm test`），不进发版清单、不做 bundle/publish
+- 发版顺序：核心 `jsonrpc` 先发（含 registry 索引同步），5 个传输包依赖核心随后发；`cjpm.toml` 里传输包对核心的依赖在核心发布后从 path 切回 registry 版本号
+
 ## 常用命令
 ```shell
 # 编译
