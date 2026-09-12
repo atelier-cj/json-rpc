@@ -360,10 +360,16 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     }
 
     private func handleOutgoingResponse(resp: Response): Unit {
-        synchronized(this.requestLock) {
-            if (let Some(pending) <- this.pendingRequest) {
-                pending.setResponse(resp)
+        // 按响应里的 id 投递：并发在飞时各回各家；未知/迟到的 id（发起方已超时并摘槽）直接忽略
+        let target = synchronized(this.requestLock) {
+            match (resp.id) {
+                case Some(id) => this.pendingRequests.get(id)
+                case None => Option<PendingRequest>.None
             }
+        }
+        match (target) {
+            case Some(pending) => pending.setResponse(resp)
+            case None => ()
         }
     }
 
@@ -459,33 +465,48 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
     }
 
     // ── Outgoing request support (for server-initiated requests like registerCapability) ──
+    //
+    // 每个在飞的反向请求各自一个 id + 一个等待槽，多个请求可同时在飞、响应按 id 配对。
+    // 此前是**单个** `pendingRequest` 槽且 id 恒为 `RequestId.Int(0)`：
+    //   - 第二个请求覆盖第一个 → 前者永远收不到响应，只能等到超时；
+    //   - 先回来的响应按"当前槽"投递 → 张冠李戴。
+    // 回归用例：jsonrpc_tests 的 ServerOutgoingRequestConcurrencyTest。
 
     private let requestLock: Mutex = Mutex()
-    private var pendingRequest: ?PendingRequest = None
+    private let pendingRequests = HashMap<RequestId, PendingRequest>()
+    private var nextRequestId: Int64 = 1
 
     public func request<T, R>(method: String, params!: ?T, timeout!: Duration = 30 * Duration.second): Result<R>
         where T <: JsonSerializable, R <: JsonDeserializable<R> {
-        let req = Request(RequestId.Int(0), method, params: match (params) {
+        var requestId: RequestId = RequestId.Int(0)
+        synchronized(this.requestLock) {
+            requestId = RequestId.Int(this.nextRequestId)
+            this.nextRequestId++
+        }
+        let req = Request(requestId, method, params: match (params) {
             case Some(p) => Some(JsonValue.fromObject(p))
             case None => None
         })
         let bytes = serializeRequest(req)
-        let pending = PendingRequest(RequestId.Int(0))
+        let pending = PendingRequest(requestId)
         synchronized(this.requestLock) {
-            this.pendingRequest = pending
+            this.pendingRequests.add(requestId, pending)
         }
         this.transport.send(this.framing.encode(bytes))
-        match (pending.waitForResponse(timeout: timeout)) {
-            case Some(resp) =>
-                synchronized(this.requestLock) { this.pendingRequest = None }
-                if (let Some(resultVal) <- resp.result) {
+        let resp = pending.waitForResponse(timeout: timeout)
+        // 无论成功/超时都摘掉等待槽；之后迟到的响应按 id 查不到 → 直接忽略
+        synchronized(this.requestLock) {
+            this.pendingRequests.remove(requestId)
+        }
+        match (resp) {
+            case Some(r) =>
+                if (let Some(resultVal) <- r.result) {
                     try { Result.Ok(JsonValue.toObject<R>(resultVal)) }
                     catch (e: Exception) { Result.Err("Failed to parse result: ${e.message}") }
-                } else if (let Some(error) <- resp.error) {
+                } else if (let Some(error) <- r.error) {
                     Result.Err("[${error.code}] ${error.message}")
                 } else { Result.Err("Invalid response") }
             case None =>
-                synchronized(this.requestLock) { this.pendingRequest = None }
                 Result.Err("Request timeout")
         }
     }

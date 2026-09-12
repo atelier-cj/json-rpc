@@ -90,6 +90,14 @@
 ### 编译器限制
 1. init 中不能在所有成员初始化前调用成员函数（如 receiveLoop）
 2. 需延迟启动接收线程（提供 start() 方法）
+
+### 并发正确性
+1. 「**单个槽位 + 固定 id**」是并发双向请求的必炸模式：覆盖式写入会丢响应，按「当前槽」投递会串台。
+   正确做法是**按 JSON-RPC id 的等待表**（`HashMap<RequestId, PendingRequest>`）+ 自增 id +
+   响应按 id 查表投递。mcp-cj 的 HTTP 传输（2026-09-12，单槽位改按 id 的 FIFO 等待队列）与
+   json-rpc 的服务端主动请求（2026-09-13，单挂起槽改等待表）是同一模式的两处修。
+2. 调用方为绕开「只能有一个在飞」而加的串行锁，会在长等待时变成吞吐瓶颈（锁横跨整个往返）；
+   底层配对修好后应把这类锁撤掉。
 ## v0.5.0（2026-08-15）
 
 ### 新增：通知回调多订阅（JsonRpcClient）
@@ -261,3 +269,33 @@
 - jsonrpc_tests 不发中心仓，path 依赖本地核心包
 - 下游验证（发版前，path 依赖本地 jsonrpc）：mcp-cj build + testclient 端到端全过、lsp-cj 34/34 全绿；验证后恢复下游注册表依赖
 - 发布顺序：核心 jsonrpc 先发 → `cjpm update` 刷新缓存 → 再发 5 个传输包
+
+## v0.7.5（2026-09-13，服务端主动请求并发配对修复）
+
+### 修复：`JsonRpcServer.request()` 由「单挂起槽」改为「按 id 的等待表」
+- 缺陷：服务端主动请求（server → client 反向调用，如 LSP `client/registerCapability`、
+  ACP `session/request_permission` / `fs/*` / `terminal/*`）用**单个** `pendingRequest` 槽承载，
+  且 `request()` 的 id 恒为 `RequestId.Int(0)`、`handleOutgoingResponse()` **不看 `resp.id`**：
+  - 两个反向请求同时在飞 → 后者的槽覆盖前者 → 前者永远收不到响应，只能等到超时；
+  - 先回来的响应按「当前槽」投递 → 张冠李戴（B 拿到 A 的答案）。
+- 修复：`pendingRequests: HashMap<RequestId, PendingRequest>` + 自增 id；
+  `handleOutgoingResponse()` 按 `resp.id` 查表投递，未知/迟到的 id 直接忽略；无论成功/超时都摘掉等待槽。
+- 影响面：acp-cj 此前用一个 `clientRequestLock` 把全部反向调用**串行化**来绕开单槽限制
+  （锁横跨整个往返，`terminalWaitForExit` 超时可达 10 分钟 → 期间其它反向调用全被堵住）；
+  lsp-cj 的 `registerCapability` / `applyEdit` / `configuration` / `workspaceFolders` 包装没有锁。
+
+### 测试
+- 新增 `ServerOutgoingRequestConcurrencyTest`（两例）：两个并发反向请求必须各拿各的响应 ——
+  ① 后发先至；② 先发先至但槽已被后来者占用（此例在旧实现下会串台）。
+  修复前两例分别 FAILED（首个请求超时）与 FAILED（第二个请求收到 `"first"`）；修复后全过。
+- 新增阻塞式内存传输 `BlockingDuplexTransport`：不复用 `tests.cj` 的 `MemPipe`
+  （它空闲 50ms 即 `return None`，而 server 把 `None` 当「传输已关闭」→ 带延迟的用例会假失败；
+  真实传输 stdio/tcp/http 的 receive 都是阻塞到有数据或 EOF）。
+- jsonrpc_tests 63/63 全绿（61 原有 + 2 新增）
+
+### 下游验证（AGENTS.md 规范，均以 path 依赖本地 jsonrpc 跑）
+- mcp-cj：3/3 全绿
+- chronomem（经 mcp-cj 全链路）：129/129 全绿
+- acp-cj（`request()` 的直接使用方）：65/65 全绿
+- lsp-cj `lsp_tests`：34/34 全绿。注意：lsp-cj 各包注册表依赖仍是 `jsonrpc 0.4.2`，
+  本次只做了本地 path 验证；发版后需另行评估是否升级其依赖
