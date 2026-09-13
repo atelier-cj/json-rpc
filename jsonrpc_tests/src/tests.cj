@@ -290,13 +290,54 @@ class JsonRpcValidationTest {
 
     @TestCase
     func testRequestMissingJsonRpc(): Unit {
+        // 契约：JSON-RPC 2.0 的 jsonrpc 是必需成员 → 缺失按 -32600 拒绝。
+        // （此前这条用例「两种行为都接受」＝没有任何断言，把不一致的契约藏了起来：
+        //   版本写错会报错，干脆不写反而放行。）
         let json = "{\"id\":1,\"method\":\"test\"}"
         try {
-            let req = deserializeRequest(json.toArray())
-            // If no exception, verify it somewhere
-            @Expect(req.method, "test")
-        } catch (_: Exception) {
-            // Accept either behavior
+            let _ = deserializeRequest(json.toArray())
+            @Fail("expected exception for missing jsonrpc")
+        } catch (e: JsonRpcException) {
+            @Expect(e.message.contains("Missing jsonrpc version"))
+        }
+    }
+
+    @TestCase
+    func testResponseMissingJsonRpc(): Unit {
+        let json = "{\"id\":1,\"result\":42}"
+        try {
+            let _ = deserializeResponse(json.toArray())
+            @Fail("expected exception for missing jsonrpc")
+        } catch (e: JsonRpcException) {
+            @Expect(e.message.contains("Missing jsonrpc version"))
+        }
+    }
+
+    @TestCase
+    func testNotificationMissingJsonRpc(): Unit {
+        let json = "{\"method\":\"test\"}"
+        try {
+            let _ = deserializeNotification(json.toArray())
+            @Fail("expected exception for missing jsonrpc")
+        } catch (e: JsonRpcException) {
+            @Expect(e.message.contains("Missing jsonrpc version"))
+        }
+    }
+
+    @TestCase
+    func testParseMessageRejectsMissingJsonRpc(): Unit {
+        // 消息级入口同样拒绝：请求 / 通知 / 响应三条路都不能把缺字段的当合法消息
+        let cases = ArrayList<String>()
+        cases.add("{\"id\":1,\"method\":\"test\"}")
+        cases.add("{\"method\":\"test\"}")
+        cases.add("{\"id\":1,\"result\":42}")
+        for (json in cases) {
+            try {
+                let _ = parseMessage(json.toArray())
+                @Fail("expected exception for missing jsonrpc: ${json}")
+            } catch (e: JsonRpcException) {
+                @Expect(e.message.contains("Missing jsonrpc version"))
+            }
         }
     }
 
