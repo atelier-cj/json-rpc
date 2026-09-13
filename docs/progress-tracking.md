@@ -354,3 +354,41 @@
 - `cjpm build -j 16` 在本仓**本来就失败**：`build-members` 含 `jsonrpc_tests`，而它是
   `output-type = "executable"` 却没有 `main` → `error: 'main' is missing`。
   要么把它移出 `build-members`，要么给它加 `main`。当前验证走 `cjpm test`。
+
+## 未发版（2026-09-13，`jsonrpc` 成员缺失不再被静默放行）
+
+### 问题：契约自相矛盾，而且被一条"没有断言"的用例盖住了
+JSON-RPC 2.0 规定 `jsonrpc` 是**必需**成员、值必须恰为 `"2.0"`。但 `Request`/`Response`/
+`Notification` 三个 `fromJson` 都只在字段**出现**时校验版本：
+
+- `{"jsonrpc":"1.0",...}` → 抛 `Invalid jsonrpc version`（有校验）
+- `{"id":1,"method":"test"}`（字段缺失）→ **静默当成 2.0 接受**，照常处理
+
+而 `jsonrpc_tests` 的 `testRequestMissingJsonRpc` 把这条不一致写成了
+`// Accept either behavior`：抛不抛都算通过 —— 等于没有任何断言，谁都没发现契约没定。
+
+### 修复：缺失一律按 -32600 拒绝
+- `types.cj` 新增 `requireJsonRpcVersion(sawVersion)`；三个 `fromJson` 各加一个
+  `sawVersion` 标记，循环结束后统一校验，缺失时抛
+  `JsonRpcException(INVALID_REQUEST, "Missing jsonrpc version")`。
+- 消息级入口自动受益（`parseSingle` 的 catch 包成 `Invalid message: ...`，
+  server 侧 `startsWith("Invalid message")` 仍映射为 -32600）。
+
+### 测试（66 → 69 全绿）
+- `testRequestMissingJsonRpc` 改为**真断言**：必须抛且文案为 `Missing jsonrpc version`。
+- 新增 `testResponseMissingJsonRpc`、`testNotificationMissingJsonRpc`（三条类型化入口全覆盖）。
+- 新增 `testParseMessageRejectsMissingJsonRpc`：请求/通知/响应三种缺字段消息走消息级
+  `parseMessage` 都必须被拒。
+
+### 下游验证（AGENTS.md 规范，以 path 依赖本地 jsonrpc 跑）
+- mcp-cj：4/4 全绿。已用 `cjpm.lock` 求证 path 依赖**确实生效**（path 依赖不进 lock，
+  原 lock 有 `"ystyle::jsonrpc" = {version = "0.7.5"}`、切换后该条目消失），验证后
+  `cjpm.toml`/`cjpm.lock` 已按字节备份还原、`git status` 干净。
+- lsp-cj：34/34 全绿，但其 `lsp_tests` 钉的是 `jsonrpc 0.4.2`（既有版本漂移），
+  因此**本次改动没有被 lsp-cj 覆盖到**，只是确认未引入编译/行为回归。
+- 静态排查：两个下游仓的源码里没有"手写 JSON 夹具缺 `jsonrpc`"的情况。
+
+### 遗留
+- `lsp_tests` 的 jsonrpc 钉在 `0.4.2`，与当前 0.7.5 漂移；等下次发版一并升。
+- 严格化属**行为变更**：若将来要兼容 JSON-RPC 1.0 风格（完全没有 `jsonrpc` 字段）的旧客户端，
+  需要显式开一个宽松开关，而不是回到"默默接受"。

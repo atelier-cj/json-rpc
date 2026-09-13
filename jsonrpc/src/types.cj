@@ -4,6 +4,18 @@ import jsonvalue.*
 import stdx.encoding.json.stream.*
 import std.deriving.*
 
+// JSON-RPC 2.0 规定 `jsonrpc` 是**必需**成员，且值必须恰为 "2.0"。
+//
+// 此前三个 fromJson（Request / Response / Notification）都只在字段**出现**时校验，
+// 字段缺失会被静默当作 2.0 接受 —— 也就是「版本写错要报错、干脆不写反而放行」这种
+// 不一致，正是 jsonrpc_tests 里那条 "Accept either behavior"（等于没断言）的来源。
+// 现在缺失一律按 -32600 Invalid Request 拒掉。
+func requireJsonRpcVersion(sawVersion: Bool): Unit {
+    if (!sawVersion) {
+        throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Missing jsonrpc version")
+    }
+}
+
 @Derive[ToString]
 public enum RequestId <: JsonSerializable & JsonDeserializable<RequestId> & Hashable & Equatable<RequestId> {
     | Int(Int64)
@@ -79,9 +91,11 @@ public class Request <: JsonSerializable & JsonDeserializable<Request> {
         var id: ?RequestId = None
         var method: ?String = None
         var params: ?JsonValue = None
+        var sawVersion = false
         while (r.peek() != EndObject) {
             match (r.readName()) {
                 case "jsonrpc" =>
+                    sawVersion = true
                     let version = r.readValue<String>()
                     if (version != "2.0") {
                         throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
@@ -93,6 +107,7 @@ public class Request <: JsonSerializable & JsonDeserializable<Request> {
             }
         }
         r.endObject()
+        requireJsonRpcVersion(sawVersion)
         Request(id.getOrThrow(), method.getOrThrow(), params: params)
     }
 }
@@ -140,9 +155,11 @@ public class Response <: JsonSerializable & JsonDeserializable<Response> {
         var id: ?RequestId = None
         var result: ?JsonValue = None
         var error: ?JsonRpcError = None
+        var sawVersion = false
         while (r.peek() != EndObject) {
             match (r.readName()) {
                 case "jsonrpc" =>
+                    sawVersion = true
                     let version = r.readValue<String>()
                     if (version != "2.0") {
                         throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
@@ -160,6 +177,7 @@ public class Response <: JsonSerializable & JsonDeserializable<Response> {
             }
         }
         r.endObject()
+        requireJsonRpcVersion(sawVersion)
         Response(id: id, result: result, error: error)
     }
 }
@@ -190,9 +208,11 @@ public class Notification <: JsonSerializable & JsonDeserializable<Notification>
         r.startObject()
         var method: ?String = None
         var params: ?JsonValue = None
+        var sawVersion = false
         while (r.peek() != EndObject) {
             match (r.readName()) {
                 case "jsonrpc" =>
+                    sawVersion = true
                     let version = r.readValue<String>()
                     if (version != "2.0") {
                         throw JsonRpcException(ErrorCodes.INVALID_REQUEST, "Invalid jsonrpc version: ${version}")
@@ -203,6 +223,7 @@ public class Notification <: JsonSerializable & JsonDeserializable<Notification>
             }
         }
         r.endObject()
+        requireJsonRpcVersion(sawVersion)
         Notification(method.getOrThrow(), params: params)
     }
 }
