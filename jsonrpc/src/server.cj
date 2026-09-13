@@ -237,9 +237,17 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
                         }
                     case None => this.close()
                 }
+            } catch (e: Exception) {
+                // 连接级异常（对端断开时 socket read 抛 ConnectionException 是常态）：
+                // 此前外层只 catch Error → Exception 逃逸杀死接收协程，而 isRunning()
+                // 仍为 true = 「运行中但已死」：既不 close 也不回收连接。
+                // 记录后关闭并退出循环（连接已不可用，继续循环只会空转）。
+                println("[jsonrpc] receiveLoop error: " + e.toString())
+                this.close()
+                return
             } catch (e: Error) {
-                // 接收外层（transport.receive / 缓冲写入）的系统级错误同样只记录不退出
-                println("[jsonrpc] receiveLoop system error: " + e.message)
+                // 接收外层（transport.receive / 缓冲写入）的系统级错误只记录不退出
+                println("[jsonrpc] receiveLoop system error: " + e.toString())
             }
         }
     }

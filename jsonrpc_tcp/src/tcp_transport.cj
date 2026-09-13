@@ -15,9 +15,12 @@ public class TcpConnectionTransport <: Transport {
     
     public func send(data: Array<Byte>): Unit {
         synchronized(this.lock) {
-            if (!this.closed) {
-                this.socket.write(data)
+            if (this.closed) {
+                // 静默丢包会让调用方干等满 timeout，且毫无线索
+                println("[jsonrpc] tcp send on closed transport dropped")
+                return
             }
+            this.socket.write(data)
         }
     }
     
@@ -80,6 +83,9 @@ public class TcpServerTransport {
             let clientSocket = this.serverSocket.accept()
             Some(TcpConnectionTransport(clientSocket))
         } catch (e: Exception) {
+            // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
+            // 调用方以为监听正常结束，实际是出错
+            println("[jsonrpc] tcp accept error: " + e.toString())
             None
         }
     }
@@ -94,6 +100,9 @@ public class TcpServerTransport {
             let clientSocket = this.serverSocket.accept(timeout: timeout)
             Some(TcpConnectionTransport(clientSocket))
         } catch (e: Exception) {
+            // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
+            // 调用方以为监听正常结束，实际是出错
+            println("[jsonrpc] tcp accept error: " + e.toString())
             None
         }
     }
@@ -134,9 +143,12 @@ public class TcpClientTransport <: Transport {
     
     public func send(data: Array<Byte>): Unit {
         synchronized(this.lock) {
-            if (!this.closed) {
-                this.socket.write(data)
+            if (this.closed) {
+                // 静默丢包会让调用方干等满 timeout，且毫无线索
+                println("[jsonrpc] tcp send on closed transport dropped")
+                return
             }
+            this.socket.write(data)
         }
     }
     
