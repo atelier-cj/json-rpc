@@ -15,9 +15,12 @@ public class UnixConnectionTransport <: Transport {
     
     public func send(data: Array<Byte>): Unit {
         synchronized(this.lock) {
-            if (!this.closed) {
-                this.socket.write(data)
+            if (this.closed) {
+                // 静默丢包会让调用方干等满 timeout，且毫无线索
+                eprintln("[jsonrpc] unix send on closed transport dropped")
+                return
             }
+            this.socket.write(data)
         }
     }
     
@@ -75,6 +78,9 @@ public class UnixServerTransport {
             let clientSocket = this.serverSocket.accept()
             Some(UnixConnectionTransport(clientSocket))
         } catch (e: Exception) {
+            // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
+            // 调用方以为监听正常结束，实际是出错
+            eprintln("[jsonrpc] unix accept error: " + e.toString())
             None
         }
     }
@@ -89,6 +95,9 @@ public class UnixServerTransport {
             let clientSocket = this.serverSocket.accept(timeout: timeout)
             Some(UnixConnectionTransport(clientSocket))
         } catch (e: Exception) {
+            // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
+            // 调用方以为监听正常结束，实际是出错
+            eprintln("[jsonrpc] unix accept error: " + e.toString())
             None
         }
     }
@@ -122,9 +131,12 @@ public class UnixClientTransport <: Transport {
     
     public func send(data: Array<Byte>): Unit {
         synchronized(this.lock) {
-            if (!this.closed) {
-                this.socket.write(data)
+            if (this.closed) {
+                // 静默丢包会让调用方干等满 timeout，且毫无线索
+                eprintln("[jsonrpc] unix send on closed transport dropped")
+                return
             }
+            this.socket.write(data)
         }
     }
     

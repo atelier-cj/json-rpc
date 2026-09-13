@@ -225,21 +225,29 @@ public func notify<T>(method: String, params!: ?T): Unit where T <: JsonSerializ
                             } catch (e: Exception) {
                                 // 单条消息处理异常不应杀死整个服务器：
                                 // 记录后跳过该消息，继续服务后续请求（否则一次坏消息=永久停机需重启）
-                                println("[jsonrpc] handleMessage error: " + e.message)
+                                eprintln("[jsonrpc] handleMessage error: " + e.message)
                             } catch (e: Error) {
                                 // 系统级错误（如 OOM 的 OutOfMemoryError）同样不许逃逸杀接收循环：
                                 // 记录后继续服务后续请求。否则一次资源耗尽 = 接收协程死亡 =
                                 // 所有请求永久超时（生产忆时塔挂起症状，需重启才恢复）。
-                                println("[jsonrpc] handleMessage system error: " + e.message)
+                                eprintln("[jsonrpc] handleMessage system error: " + e.message)
                             }
                             // 无论处理成败都推进缓冲区，避免同一段字节反复解码
                             recvBuffer.seek(SeekPosition.Current(consumed))
                         }
                     case None => this.close()
                 }
+            } catch (e: Exception) {
+                // 连接级异常（对端断开时 socket read 抛 ConnectionException 是常态）：
+                // 此前外层只 catch Error → Exception 逃逸杀死接收协程，而 isRunning()
+                // 仍为 true = 「运行中但已死」：既不 close 也不回收连接。
+                // 记录后关闭并退出循环（连接已不可用，继续循环只会空转）。
+                eprintln("[jsonrpc] receiveLoop error: " + e.toString())
+                this.close()
+                return
             } catch (e: Error) {
-                // 接收外层（transport.receive / 缓冲写入）的系统级错误同样只记录不退出
-                println("[jsonrpc] receiveLoop system error: " + e.message)
+                // 接收外层（transport.receive / 缓冲写入）的系统级错误只记录不退出
+                eprintln("[jsonrpc] receiveLoop system error: " + e.toString())
             }
         }
     }

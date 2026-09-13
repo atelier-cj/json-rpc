@@ -88,7 +88,9 @@ public class WebSocketServerHandler <: HttpRequestHandler {
             server.copyMiddlewaresFrom(this.rpcServer)
             server.start()
         } catch (e: Exception) {
-            ()
+            // WS 升级/启动失败不能静默：客户端只会看到 socket 被关，
+            // 服务端若不留线索，排查时无从下手
+            eprintln("[jsonrpc] websocket upgrade failed: " + e.toString())
         }
     }
 }
