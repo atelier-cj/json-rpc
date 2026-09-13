@@ -233,7 +233,7 @@ public class JsonRpcClient {
                     case None =>
                         // 对端关闭：不能只翻 running 标志——必须 shutdown 唤醒在途调用，
                         // 否则它们还要干等满 timeout（默认 30s）
-                        println("[jsonrpc] client transport closed by peer")
+                        eprintln("[jsonrpc] client transport closed by peer")
                         this.shutdown("transport closed by peer")
                 }
             } catch (e: Exception) {
@@ -241,12 +241,12 @@ public class JsonRpcClient {
                 // 此前 receiveLoop 没有任何 try —— 异常逃逸直接杀死接收线程，而
                 // running 仍为 true、在途调用无人唤醒 → 所有后续调用挂到超时。
                 // 记录 + shutdown（唤醒在途）+ 退出循环。
-                println("[jsonrpc] client receiveLoop error: " + e.toString())
+                eprintln("[jsonrpc] client receiveLoop error: " + e.toString())
                 this.shutdown("receive loop error: " + e.toString())
             } catch (e: Error) {
                 // 系统级错误（如 OOM 的 OutOfMemoryError）与 Exception 平行，同样不许
                 // 逃逸杀接收协程；只记录并继续（对齐 server 侧 81f1eed 的取舍）
-                println("[jsonrpc] client receiveLoop system error: " + e.toString())
+                eprintln("[jsonrpc] client receiveLoop system error: " + e.toString())
             }
         }
     }
@@ -270,7 +270,7 @@ public class JsonRpcClient {
                         } catch (e: Exception) {
                             // 通知回调抛异常不能静默：那是用户回调的 bug，
                             // 不记录的话表现为"通知收到了但没反应"
-                            println("[jsonrpc] notification callback error: " + e.toString())
+                            eprintln("[jsonrpc] notification callback error: " + e.toString())
                         }
                     }
                 case _ => ()
@@ -278,9 +278,9 @@ public class JsonRpcClient {
         } catch (e: Exception) {
             // 单条消息处理异常不该杀接收循环，但也绝不能静默——
             // 协议/解析问题会完全不可见（表现是"请求发出去了没人管"）
-            println("[jsonrpc] client handleMessage error: " + e.toString())
+            eprintln("[jsonrpc] client handleMessage error: " + e.toString())
         } catch (e: Error) {
-            println("[jsonrpc] client handleMessage system error: " + e.toString())
+            eprintln("[jsonrpc] client handleMessage system error: " + e.toString())
         }
     }
 

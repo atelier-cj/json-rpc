@@ -17,7 +17,7 @@ public class UnixConnectionTransport <: Transport {
         synchronized(this.lock) {
             if (this.closed) {
                 // 静默丢包会让调用方干等满 timeout，且毫无线索
-                println("[jsonrpc] unix send on closed transport dropped")
+                eprintln("[jsonrpc] unix send on closed transport dropped")
                 return
             }
             this.socket.write(data)
@@ -80,7 +80,7 @@ public class UnixServerTransport {
         } catch (e: Exception) {
             // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
             // 调用方以为监听正常结束，实际是出错
-            println("[jsonrpc] unix accept error: " + e.toString())
+            eprintln("[jsonrpc] unix accept error: " + e.toString())
             None
         }
     }
@@ -97,7 +97,7 @@ public class UnixServerTransport {
         } catch (e: Exception) {
             // accept 失败（含超时）与「监听已关闭」必须能区分：静默返回 None 会让
             // 调用方以为监听正常结束，实际是出错
-            println("[jsonrpc] unix accept error: " + e.toString())
+            eprintln("[jsonrpc] unix accept error: " + e.toString())
             None
         }
     }
@@ -133,7 +133,7 @@ public class UnixClientTransport <: Transport {
         synchronized(this.lock) {
             if (this.closed) {
                 // 静默丢包会让调用方干等满 timeout，且毫无线索
-                println("[jsonrpc] unix send on closed transport dropped")
+                eprintln("[jsonrpc] unix send on closed transport dropped")
                 return
             }
             this.socket.write(data)

@@ -140,7 +140,7 @@ private func parseBatch(bytes: Array<Byte>): Message {
             } catch (e: Exception) {
                 // 跳过坏 item 本身是合理的（一条坏项不该毁掉整个批量响应），
                 // 但不能静默：被丢掉的项对应的请求方永远拿不到响应，只会超时收场
-                println("[jsonrpc] skip invalid item in batch response: " + e.toString())
+                eprintln("[jsonrpc] skip invalid item in batch response: " + e.toString())
             }
         }
         Message.BatchResponse(items)

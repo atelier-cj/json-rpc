@@ -44,7 +44,7 @@ public class HttpClientTransport <: Transport {
             }
         } catch (e: Exception) {
             // 不能静默：请求根本没发出去，调用方的 pending 只能干等满 timeout
-            println("[jsonrpc] http transport send error: " + e.toString())
+            eprintln("[jsonrpc] http transport send error: " + e.toString())
         }
     }
     

@@ -90,7 +90,7 @@ public class WebSocketServerHandler <: HttpRequestHandler {
         } catch (e: Exception) {
             // WS 升级/启动失败不能静默：客户端只会看到 socket 被关，
             // 服务端若不留线索，排查时无从下手
-            println("[jsonrpc] websocket upgrade failed: " + e.toString())
+            eprintln("[jsonrpc] websocket upgrade failed: " + e.toString())
         }
     }
 }
