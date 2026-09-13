@@ -299,3 +299,58 @@
 - acp-cj（`request()` 的直接使用方）：65/65 全绿
 - lsp-cj `lsp_tests`：34/34 全绿。注意：lsp-cj 各包注册表依赖仍是 `jsonrpc 0.4.2`，
   本次只做了本地 path 验证；发版后需另行评估是否升级其依赖
+
+## 未发版（2026-09-13，客户端接收循环 / 连接关闭的失败可见性）
+
+### 背景：此前两类修复只覆盖了 server 侧
+- `81f1eed`（receiveLoop 边界捕获系统级 Error）与 `42768e7`（断开时 close）都只改
+  `jsonrpc/src/server.cj`；`client.cj` 一行没碰，5 个传输包也只有"用到的那个"被顺带改过。
+- 触发线索：一处静默失败的回归用例排查（`pushUpdate` 吞异常）顺着"失败不可见"这条线
+  扫到 json-rpc，发现客户端侧是同一族缺陷的完整未修版本。
+
+### 族 1：catch Error / Exception 覆盖
+- **`client.receiveLoop` 此前完全没有 `try/catch`**：传输层抛异常（对端断开时 socket read
+  抛 `ConnectionException` 是常态）直接逃逸杀死接收线程，而 `running` 仍为 `true`、
+  在途调用无人唤醒 → **所有调用干等满 timeout（默认 30s）= 客户端挂起**。
+  这正好是 `81f1eed` 提交说明里描述的"生产忆时塔挂起症状"的客户端版本。
+- **`client.cj` 全文件没有一处 `catch (e: Error)`**：OOM 这类系统级 Error 同样杀循环。
+- 现为：`Exception` → 记录 + shutdown（唤醒在途）+ 退出；`Error` → 记录 + 继续
+  （对齐 server 侧 81f1eed 的取舍：OOM 不允许停机）。
+- `handleMessage` 的静默 `()`、通知回调的吞异常 → 改为打日志（协议/回调问题不再不可见）。
+
+### 族 2：连接 close
+- `close()` 与传输 EOF 此前只翻 `running` 标志，**不唤醒 `pendingRequests`**：
+  连接已经没了，每个在途调用仍要干等满 timeout 才返回。
+- 现新增私有 `shutdown(reason)`：置标志 + **逐个 cancel 在途请求** + 关闭传输；
+  `close()` = `shutdown` + cancel 接收线程（分离是为了让 receiveLoop 内部也能调用而不 cancel 自己）。
+- `call()` 区分「连接已不可用（立刻失败，`Connection unavailable: …`）」与「真的超时」，
+  不再把前者误诊成后者。
+
+### 传输层（5 个包统一过一遍）
+| 包 | 改动 |
+|---|---|
+| `jsonrpc_stdio` | `receive`/`send` 补 `closed` 检查（关闭后不再挂在阻塞读上；stdin 无法中断已注明） |
+| `jsonrpc_http` | `send` 失败不再静默丢请求（丢了调用方只能干等 timeout） |
+| `jsonrpc_websocket` | WS 升级/启动失败补日志（此前客户端只看到 socket 被关，服务端零线索） |
+| `jsonrpc_tcp` / `jsonrpc_unix` | accept 失败补日志（与「监听已关闭」区分）；closed 时 send 丢弃补日志。**这两个包自初始实现 `c3966d6` 起从未修改过** |
+
+### 测试（63 → 66 全绿）
+- 新增 `TransportResilienceTest` 3 例：接收抛异常时在途调用**立刻失败**且文案为
+  `Connection unavailable`（timeout 故意给 30s，修复失效即表现为等满 30s 的失败）；
+  `close()` 唤醒在途调用；一条坏消息不杀接收循环（之后仍能拿到正常响应）。
+- 踩坑记录：写"坏消息不杀循环"用例时起初用 `MemDuplexTransport`，其 `MemPipe` 空闲即
+  返回 `None`，被新加的 `case None => shutdown(...)` 当成 EOF → 用例失败。改用
+  `BlockingDuplexTransport`（2026-09-13 v0.7.5 那次就是为这个坑加的）。**`Transport.receive()`
+  返回 `None` 的语义是「已关闭」，测试桩必须阻塞**。
+
+### 下游验证（AGENTS.md 规范，均以 path 依赖本地 jsonrpc 跑）
+- mcp-cj：4/4 全绿
+- lsp-cj：34/34 全绿（其注册表依赖仍是 `jsonrpc 0.4.2`，本次是本地 path 验证；
+  验证后已把两个 `cjpm.lock` 用 `cjpm update` 重生成回 `0.4.2` 一致状态）
+
+### 遗留（本次未做）
+- 5 个传输包在 `jsonrpc_tests` 里**零覆盖**（测试只 import 核心，用内存桩）——
+  建议补 tcp/unix loopback 用例，否则"只改了用到的传输"还会再发生。
+- `cjpm build -j 16` 在本仓**本来就失败**：`build-members` 含 `jsonrpc_tests`，而它是
+  `output-type = "executable"` 却没有 `main` → `error: 'main' is missing`。
+  要么把它移出 `build-members`，要么给它加 `main`。当前验证走 `cjpm test`。
