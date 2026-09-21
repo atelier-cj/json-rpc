@@ -1,20 +1,24 @@
 import std.fs.*
 import std.process.Process
 
-func copyReadme(): Unit {
+func copySharedFiles(): Unit {
     let members = ["jsonrpc", "jsonrpc_stdio", "jsonrpc_tcp", "jsonrpc_unix", "jsonrpc_http", "jsonrpc_websocket"]
+    // README/LICENSE 是仓根一份、成员各带一份：中心仓制品要求成员目录自带，
+    // 而成员目录里的这两份是构建期拷进来的（不入库，见 .gitignore）
     for (mem in members) {
-        try {
-            copy("./README.md", to: "./${mem}/README.md", overwrite: true)
-        } catch (e: Exception) {
-            println("Warning: failed to copy README to ${mem}: ${e.message}")
+        for (file in ["README.md", "LICENSE"]) {
+            try {
+                copy("./${file}", to: "./${mem}/${file}", overwrite: true)
+            } catch (e: Exception) {
+                println("Warning: failed to copy ${file} to ${mem}: ${e.message}")
+            }
         }
     }
-    println("README copied to all member modules")
+    println("README/LICENSE copied to all member modules")
 }
 
 func stagePreBuild(): Int64 {
-    copyReadme()
+    copySharedFiles()
     0
 }
 
