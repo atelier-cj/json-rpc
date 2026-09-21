@@ -8,7 +8,7 @@
   compile-option = ""
   override-compile-option = ""
   link-option = ""
-  include = ["src"]
+  include = ["src", "LICENSE"]
   license = ["MIT"]
   authors = ["ystyle"]
   repository = "https://gitcode.com/ystyle/json-rpc.git"
