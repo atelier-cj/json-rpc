@@ -3,7 +3,7 @@
   name = "jsonrpc_stdio"
   organization = "ystyle"
   description = "JSON-RPC Stdio 传输层"
-  version = "0.7.6"
+  version = "0.7.7"
   output-type = "static"
   compile-option = ""
   override-compile-option = ""
@@ -16,7 +16,7 @@
 
 
 [dependencies]
-  "ystyle::jsonrpc" = "0.7.6"
+  "ystyle::jsonrpc" = "0.7.7"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
   path-option = ["${CANGJIE_STDX_PATH}"]
