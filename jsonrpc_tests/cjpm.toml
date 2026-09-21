@@ -3,9 +3,12 @@
   name = "jsonrpc_tests"
   version = "0.4.1"
   output-type = "executable"
+  # 测试工程含 HTTP 传输用例（stdx.net.http 静态链接需要显式带上摘要库）
+  link-option = "-lstdx.crypto.digest"
 
 [dependencies]
   "ystyle::jsonrpc" = { path = "../jsonrpc" }
+  "ystyle::jsonrpc_http" = { path = "../jsonrpc_http" }
   "jsonvalue" = "1.1.0"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
