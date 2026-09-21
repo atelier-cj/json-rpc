@@ -392,3 +392,48 @@ JSON-RPC 2.0 规定 `jsonrpc` 是**必需**成员、值必须恰为 `"2.0"`。�
 - `lsp_tests` 的 jsonrpc 钉在 `0.4.2`，与当前 0.7.5 漂移；等下次发版一并升。
 - 严格化属**行为变更**：若将来要兼容 JSON-RPC 1.0 风格（完全没有 `jsonrpc` 字段）的旧客户端，
   需要显式开一个宽松开关，而不是回到"默默接受"。
+
+## 未发版（2026-09-21，HTTP 失败可见性：在途记录与错误体）
+
+### 问题一：`call()` 在 `send` 抛异常时留下在途记录
+`call()` 先把请求登记进 `pendingRequests` 再 `transport.send(...)`；send 抛异常
+（传输已关闭 / 对端断开 / HTTP 层失败）时那条登记无人清理 —— 只增不减的泄漏，
+且之后若出现同 id 的响应，会投给一个没人等的槽位。
+
+修复：send 失败先 `pendingRequests.remove(id)` 再原样抛出，调用方立刻拿到原因，
+而不是干等满 timeout（那正是「客户端挂起」的来源）。另补
+`JsonRpcClient.inFlightCount()`（在途调用数）供诊断与回归断言。
+
+### 问题二：`jsonrpc_http` 把 HTTP 层失败当协议消息
+`HttpClientTransport.send` 此前只做两件事：把响应体原样入队；异常只打日志。
+服务端/网关回 4xx/5xx + `text/plain`（如 Go 侧 `Invalid session ID`）时：
+
+- 纯文本被当成一条 JSON-RPC 消息 → 解析必然失败，日志只剩 `Parse error`，
+  服务端真正说的话被丢掉；
+- 异常被吞掉后调用方拿不到任何响应，只能干等满 timeout（默认 30s）。
+
+修复：非 2xx 且响应体不像 JSON-RPC 消息（首个非空白字节不是 `{` 或 `[`）→ 抛
+`HTTP <status> from <url>: <原文摘要>`；规范允许的「4xx/5xx + JSON-RPC 错误体」
+照常投递；2xx 却是空体也不再入队（同样只会得到 `Parse error`）；异常一律冒泡。
+顺带把响应体从「一次 read（最多 8KB）」改成读满 —— 截断的 JSON 同样只会变成
+解析错，而且报错位置离原因很远。同一缺陷在 mcp-cj 的两条 HTTP 传输上已先行修复
+（体现在其 2.3.12 里）。
+
+### 测试（69 → 73 全绿）
+- `testSendFailurePropagatesAndClearsPending`：send 抛异常时调用立刻拿到异常，
+  且 `inFlightCount()` 恒为 0（连发两次都不累积）。
+- `testPlainTextHttpErrorIsSurfaced`、`testJsonRpcErrorBodyIsStillDelivered`、
+  `testLargeResponseBodyIsReadWhole`（40KB 响应体）。
+- 反向验证：临时还原修复点后，HTTP 用例确实失败
+  （`HTTP failure must surface as an error, got: Request timeout`）。
+- `jsonrpc_tests` 首次引入 `jsonrpc_http`（path 依赖）；因静态链接 stdx.net.http，
+  按本工作区既有做法补 `link-option = "-lstdx.crypto.digest"`。
+
+### 下游验证（按 AGENTS.md 规范，以 path 依赖本地 jsonrpc 跑）
+- mcp-cj：12/12 全绿（验证后 `cjpm.toml` / `cjpm.lock` 已还原、`git status` 干净）。
+- lsp-cj：34/34 全绿；其 `lsp_tests` 仍钉 `jsonrpc 0.4.2`，本次改动**没有被它覆盖到**，
+  只是确认未引入编译/行为回归。
+
+### 遗留
+- 版本号仍是 `0.7.6`（本次未发版）；若要发，6 个包需一起升到 `0.7.7`。
+- `lsp_tests` 的 jsonrpc 依赖仍钉在 `0.4.2`（与上次记录一致，未变）。
