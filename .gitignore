@@ -14,10 +14,16 @@ cjpm.lock
 .claude/
 skills-lock.json
 
-# Auto-generated READMEs (copied from root by build.cj)
+# Auto-generated README/LICENSE (copied from root by build.cj)
 jsonrpc/README.md
 jsonrpc_stdio/README.md
 jsonrpc_tcp/README.md
 jsonrpc_unix/README.md
 jsonrpc_http/README.md
 jsonrpc_websocket/README.md
+jsonrpc/LICENSE
+jsonrpc_stdio/LICENSE
+jsonrpc_tcp/LICENSE
+jsonrpc_unix/LICENSE
+jsonrpc_http/LICENSE
+jsonrpc_websocket/LICENSE
