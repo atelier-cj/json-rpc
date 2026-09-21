@@ -133,7 +133,15 @@ public class JsonRpcClient {
         let bytes = serializeRequest(req)
         let pending = PendingRequest(id)
         this.pendingRequests.add(id, pending)
-        this.transport.send(this.framing.encode(bytes))
+        try {
+            this.transport.send(this.framing.encode(bytes))
+        } catch (e: Exception) {
+            // 送不出去（传输已关闭 / 对端断开 / HTTP 层失败）时必须撤掉在途记录：
+            // 留着它既是泄漏，也会让「之后再出现同 id 的响应」投给一个没人等的槽位。
+            // 异常照常向调用方冒泡——那才是立刻可见的失败（等待只能等来超时）。
+            this.pendingRequests.remove(id)
+            throw e
+        }
 
         match (pending.waitForResponse(timeout: timeout)) {
             case Some(resp) =>
@@ -202,6 +210,16 @@ public class JsonRpcClient {
         synchronized(this.lock) {
             !this.running
         }
+    }
+
+    /**
+     * 当前在途（已发出、尚未拿到响应或失败）的调用数。
+     *
+     * 用于诊断与回归：正常收尾后必须回到 0——`send` 失败或响应处理异常时若把它
+     * 留在表里，就是一条只增不减的泄漏。
+     */
+    public func inFlightCount(): Int64 {
+        this.pendingRequests.size
     }
     
     private func generateId(): RequestId {
