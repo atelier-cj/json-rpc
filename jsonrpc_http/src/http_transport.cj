@@ -5,6 +5,82 @@ import jsonvalue.*
 import stdx.net.http.*
 import std.collection.*
 import std.sync.*
+import std.io.InputStream
+
+/**
+ * 响应体是否像一条 JSON-RPC 消息（首个非空白字节为 `{` 或 `[`）。
+ *
+ * 用于把两类非 2xx 分开：规范允许的「4xx/5xx + JSON-RPC 错误体」是协议消息，
+ * 要照常投递；网关/框架自己的 `text/plain`、HTML 错误页不是。
+ */
+func looksLikeJsonMessage(body: Array<Byte>): Bool {
+    for (b in body) {
+        if (b == 32 || b == 9 || b == 10 || b == 13) {
+            continue
+        }
+        return b == 123 || b == 91
+    }
+    false
+}
+
+/** 错误体摘要的字节上限（超出即截断）。 */
+const HTTP_ERROR_SNIPPET_BYTES: Int64 = 200
+
+/** HTTP 失败的异常文本：状态码 + 端点 + 服务端原文（截断后）。 */
+func httpFailureText(status: UInt16, url: String, body: Array<Byte>): String {
+    let detail = bodySnippet(body)
+    if (detail == "") {
+        return "HTTP ${status} from ${url}"
+    }
+    "HTTP ${status} from ${url}: ${detail}"
+}
+
+/** 错误体摘要：折叠控制字符、按上限截断（不切断多字节字符）。 */
+func bodySnippet(body: Array<Byte>): String {
+    if (body.size == 0) {
+        return ""
+    }
+    let flat = ArrayList<Byte>()
+    for (b in body) {
+        if (b < 32 || b == 127) {
+            flat.add(32)          // 换行/制表/其它控制字符折叠成空格
+        } else {
+            flat.add(b)
+        }
+    }
+    var cut = flat.size
+    if (cut > HTTP_ERROR_SNIPPET_BYTES) {
+        cut = HTTP_ERROR_SNIPPET_BYTES
+        // UTF-8 续字节形如 10xxxxxx（0x80..0xBF）：回退到字符边界，别切出半个字
+        while (cut > 0 && flat[cut] >= 128 && flat[cut] < 192) {
+            cut--
+        }
+    }
+    let raw = Array<Byte>(cut, repeat: 0)
+    for (i in 0..cut) {
+        raw[i] = flat[i]
+    }
+    String.fromUtf8(raw).trimAscii()
+}
+
+/** 读满输入流：一次 read 只能拿到缓冲那么多，截断的 JSON 同样只会变成解析错。 */
+func readAll(body: InputStream): Array<Byte> {
+    let buf = Array<Byte>(8192, repeat: 0)
+    let total = ArrayList<Byte>()
+    while (true) {
+        let n: Int64
+        try {
+            n = body.read(buf)
+        } catch (_: Exception) {
+            break
+        }
+        if (n <= 0) {
+            break
+        }
+        total.add(all: buf[0..n])
+    }
+    total.toArray()
+}
 
 public class HttpClientTransport <: Transport {
     private let client: Client
@@ -31,20 +107,32 @@ public class HttpClientTransport <: Transport {
             match (decode(data)) {
                 case Some((body, _)) =>
                     let resp = this.client.post(this.url, body)
-                    let buf = Array<Byte>(8192, repeat: 0)
-                    let len = resp.body.read(buf)
-                    if (len > 0) {
-                        let framed = encode(buf[0..len])
-                        synchronized(this.lock) {
-                            this.responseQueue.add(framed)
-                            this.cond.notifyAll()
+                    let bytes = readAll(resp.body)
+                    if (resp.status < 200 || resp.status >= 300) {
+                        if (!looksLikeJsonMessage(bytes)) {
+                            // HTTP 层的失败不是协议消息：原样投递只会得到一句
+                            // "Parse error"，服务端真正说的话被丢掉，在途调用还要
+                            // 干等满 timeout
+                            throw Exception(httpFailureText(resp.status, this.url, bytes))
                         }
+                    } else if (bytes.size == 0) {
+                        // 2xx 却是空体：喂给解析器同样只会得到 "Parse error"
+                        eprintln("[jsonrpc] http transport: empty body from ${this.url} (status ${resp.status})")
+                        return
+                    }
+                    let framed = encode(bytes)
+                    synchronized(this.lock) {
+                        this.responseQueue.add(framed)
+                        this.cond.notifyAll()
                     }
                 case None => ()
             }
         } catch (e: Exception) {
-            // 不能静默：请求根本没发出去，调用方的 pending 只能干等满 timeout
+            // 不能只记日志：请求根本没发出去、或对端回了 HTTP 层失败时，调用方的
+            // 在途请求只能干等满 timeout（默认 30s）——那正是「客户端挂起」的来源。
+            // 抛出去，让 call() 撤掉在途记录并把原因立刻交给调用方。
             eprintln("[jsonrpc] http transport send error: " + e.toString())
+            throw e
         }
     }
     
