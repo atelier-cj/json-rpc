@@ -18,9 +18,10 @@
 
 ## 发布约定（中心仓）
 
-- 只发布**库包**：`jsonrpc`（核心）+ 5 个传输包 `jsonrpc_websocket` / `jsonrpc_http` / `jsonrpc_unix` / `jsonrpc_tcp` / `jsonrpc_stdio`，各包版本号保持一致
+- 只发布**库包**：`jsonrpc`（核心）+ 5 个传输包 `jsonrpc_websocket` / `jsonrpc_http` / `jsonrpc_unix` / `jsonrpc_tcp` / `jsonrpc_stdio`，各包版本号保持一致（**lockstep**：本 workspace 视为一个产品，任一成员有实质变更即整产品推进一个版本、零改动成员随之发版。规则与理由见工作区 [`docs/publish-scope.md`](../docs/publish-scope.md) §5.6）
 - **测试包不需要发布到中心仓**：`jsonrpc_tests` 仅用于本地构建与集成验证（`cjpm test`），不进发版清单、不做 bundle/publish
 - 发版顺序：核心 `jsonrpc` 先发（含 registry 索引同步），5 个传输包依赖核心随后发；`cjpm.toml` 里传输包对核心的依赖在核心发布后从 path 切回 registry 版本号
+- 发布工具：`./scripts/workspace-release.sh check|bump|publish|tag json-rpc`（`check` 校验 6 个包版本一致与拓扑序，`bump` 统一改版本并改写成员间依赖声明，`publish` 按拓扑序预演发布）
 
 ## 常用命令
 ```shell
