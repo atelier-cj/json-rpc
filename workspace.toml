@@ -5,11 +5,11 @@
 # 整产品推进一个版本，零改动成员随之发版；测试/示例包（*_tests / *_examples）不参与、不发布。
 
 [workspace.package]
-  version = "0.7.7"
+  version = "0.7.8"
 
 # 共享外部依赖：声明一次，sync 只会对齐成员**已声明**的同键依赖，不新增依赖
 [workspace.dependencies]
-  "jsonvalue" = "1.1.0"
+  "jsonvalue" = "1.1.1"
 
 # 参与发布的成员；members 留空 = 自动（workspace members 里除 *_tests / *_examples 之外的全部）
 [workspace.publish]
