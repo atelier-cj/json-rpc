@@ -1,0 +1,2 @@
+Error: the member module '/home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests' of the test-members field must appear in the build-members field
+Error: cjpm build failed

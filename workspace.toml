@@ -5,7 +5,7 @@
 # 整产品推进一个版本，零改动成员随之发版；测试/示例包（*_tests / *_examples）不参与、不发布。
 
 [workspace.package]
-  version = "0.7.8"
+  version = "0.7.9"
 
 # 共享外部依赖：声明一次，sync 只会对齐成员**已声明**的同键依赖，不新增依赖
 [workspace.dependencies]

@@ -1,0 +1,642 @@
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.collect_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.aspect_cj.plugins.weave_aspects' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors.macros' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.actors' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.chir' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.tar' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.compress.zlib' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.crypto' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.digest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.keys' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.x509' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.crypto.kit' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.effect' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.base64' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.hex' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.json.stream' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.encoding.url' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.log' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.fuzz' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.logger' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.http' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.net.tls.common' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.plugin.manager' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.serialization.serialization' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.string_intern' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.syntax' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+Warning: the package 'stdx.unittest.data' is imported multiple times, the path '/home/ystyle/.config/cjvs/stdx/1.2.0.1/linux_x86_64_cjnative/static/stdx' is chosen
+[33mwarning[0m: unused variable:'data'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_http/src/http_transport.cj:261:22:
+    [36m| [0m
+[36m261[0m [36m| [0m    public func send(data: Array<Byte>): Unit {}[0m
+    [36m| [0m                     [33m^^^^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+
+1 warning generated, 1 warning printed.
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:545:42:
+    [36m| [0m
+[36m545[0m [36m| [0m        client.setNotificationCallback({ notif =>[0m
+    [36m| [0m                                         [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:549:42:
+    [36m| [0m
+[36m549[0m [36m| [0m        client.setNotificationCallback({ notif =>[0m
+    [36m| [0m                                         [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:576:42:
+    [36m| [0m
+[36m576[0m [36m| [0m        client.setNotificationCallback({ notif =>[0m
+    [36m| [0m                                         [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:581:19:
+    [36m| [0m
+[36m581[0m [36m| [0m        cbs.add({ notif => synchronized(lock) { calls.add("c1") } })[0m
+    [36m| [0m                  [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:582:19:
+    [36m| [0m
+[36m582[0m [36m| [0m        cbs.add({ notif => synchronized(lock) { calls.add("c2") } })[0m
+    [36m| [0m                  [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:608:42:
+    [36m| [0m
+[36m608[0m [36m| [0m        client.setNotificationCallback({ notif =>[0m
+    [36m| [0m                                         [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'notif'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:612:42:
+    [36m| [0m
+[36m612[0m [36m| [0m        client.addNotificationCallback({ notif =>[0m
+    [36m| [0m                                         [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:527:1:
+    [36m| [0m
+[36m527[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m528[0m [36m| [0m[34m|[0m class NotificationCallbackSemanticsTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m663[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'ctx'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:677:46:
+    [36m| [0m
+[36m677[0m [36m| [0m        server.registerAsync("async/echo", { ctx, complete =>[0m
+    [36m| [0m                                             [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'ctx'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:721:47:
+    [36m| [0m
+[36m721[0m [36m| [0m        serverA.registerAsync("outer/call", { ctx, complete =>[0m
+    [36m| [0m                                              [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:225:1:
+    [36m| [0m
+[36m225[0m [36m| [0m  @Test[0m
+    [36m| [0m [33m_[0m[33m^[0m
+[36m226[0m [36m| [0m[33m|[0m class ResultTest {[0m
+    [36m| [0m[33m|[0m ...[0m
+[36m244[0m [36m| [0m[33m|[0m }[0m
+    [36m| [0m[33m|[0m[33m_[0m[33m^[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: unreachable pattern
+    [36m| [0m
+    [36m| [0m  @Attribute[TEST_GENERATED] class ResultTest <: TestClass {[0m
+    [36m| [0m [34m_[0m[34m__________^[0m
+    [36m| [0m[34m|[0m     public override func asTestSuite(): TestSuite {[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         let suiteConfiguration = classConfiguration()[0m
+    [36m| [0m[34m|[0m         let suiteBuilder = TestSuite.builder("ResultTest").configure(suiteConfiguration)[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         { => let caseConfig = Configuration()[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m             let testOkTestFunc = { => testOk();() }[0m
+    [36m| [0m[34m|[0m             suiteBuilder.add([0m
+    [36m| [0m[34m|[0m             UnitTestCase.create([0m
+    [36m| [0m[34m|[0m             "testOk",[0m
+    [36m| [0m[34m|[0m             configuration: caseConfig,[0m
+    [36m| [0m[34m|[0m             body: testOkTestFunc[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m         }()[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         { => let caseConfig = Configuration()[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m             let testErrTestFunc = { => testErr();() }[0m
+    [36m| [0m[34m|[0m             suiteBuilder.add([0m
+    [36m| [0m[34m|[0m             UnitTestCase.create([0m
+    [36m| [0m[34m|[0m             "testErr",[0m
+    [36m| [0m[34m|[0m             configuration: caseConfig,[0m
+    [36m| [0m[34m|[0m             body: testErrTestFunc[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m         }()[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         return suiteBuilder.build()[0m
+    [36m| [0m[34m|[0m     }[0m
+    [36m| [0m[34m|[0m     @Attribute[TestCase_29][0m
+    [36m| [0m[34m|[0m     func testOk(): Unit {[0m
+    [36m| [0m[34m|[0m         let r: Result < String >= Result.Ok("success")[0m
+    [36m| [0m[34m|[0m         match(r) {[0m
+    [36m| [0m[34m|[0m             case Ok(v) => expectEqual("v", "\"success\"", v, "success", isDelta: false)[0m
+    [36m| [0m[34m|[0m             case Err(_) => fail("expected Ok")[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m______________________^[0m
+    [36m| [0m
+
+[33mwarning[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:225:1:
+    [36m| [0m
+[36m225[0m [36m| [0m  @Test[0m
+    [36m| [0m [33m_[0m[33m^[0m
+[36m226[0m [36m| [0m[33m|[0m class ResultTest {[0m
+    [36m| [0m[33m|[0m ...[0m
+[36m244[0m [36m| [0m[33m|[0m }[0m
+    [36m| [0m[33m|[0m[33m_[0m[33m^[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: unreachable pattern
+    [36m| [0m
+    [36m| [0m  @Attribute[TEST_GENERATED] class ResultTest <: TestClass {[0m
+    [36m| [0m [34m_[0m[34m__________^[0m
+    [36m| [0m[34m|[0m     public override func asTestSuite(): TestSuite {[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         let suiteConfiguration = classConfiguration()[0m
+    [36m| [0m[34m|[0m         let suiteBuilder = TestSuite.builder("ResultTest").configure(suiteConfiguration)[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         { => let caseConfig = Configuration()[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m             let testOkTestFunc = { => testOk();() }[0m
+    [36m| [0m[34m|[0m             suiteBuilder.add([0m
+    [36m| [0m[34m|[0m             UnitTestCase.create([0m
+    [36m| [0m[34m|[0m             "testOk",[0m
+    [36m| [0m[34m|[0m             configuration: caseConfig,[0m
+    [36m| [0m[34m|[0m             body: testOkTestFunc[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m         }()[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         { => let caseConfig = Configuration()[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m             let testErrTestFunc = { => testErr();() }[0m
+    [36m| [0m[34m|[0m             suiteBuilder.add([0m
+    [36m| [0m[34m|[0m             UnitTestCase.create([0m
+    [36m| [0m[34m|[0m             "testErr",[0m
+    [36m| [0m[34m|[0m             configuration: caseConfig,[0m
+    [36m| [0m[34m|[0m             body: testErrTestFunc[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             )[0m
+    [36m| [0m[34m|[0m             [0m
+    [36m| [0m[34m|[0m         }()[0m
+    [36m| [0m[34m|[0m         [0m
+    [36m| [0m[34m|[0m         return suiteBuilder.build()[0m
+    [36m| [0m[34m|[0m     }[0m
+    [36m| [0m[34m|[0m     @Attribute[TestCase_29][0m
+    [36m| [0m[34m|[0m     func testOk(): Unit {[0m
+    [36m| [0m[34m|[0m         let r: Result < String >= Result.Ok("success")[0m
+    [36m| [0m[34m|[0m         match(r) {[0m
+    [36m| [0m[34m|[0m             case Ok(v) => expectEqual("v", "\"success\"", v, "success", isDelta: false)[0m
+    [36m| [0m[34m|[0m             case Err(_) => fail("expected Ok")[0m
+    [36m| [0m[34m|[0m         }[0m
+    [36m| [0m[34m|[0m     }[0m
+    [36m| [0m[34m|[0m     [0m
+    [36m| [0m[34m|[0m     @Attribute[TestCase_30][0m
+    [36m| [0m[34m|[0m     func testErr(): Unit {[0m
+    [36m| [0m[34m|[0m         let r: Result < Int64 >= Result.Err("error msg")[0m
+    [36m| [0m[34m|[0m         match(r) {[0m
+    [36m| [0m[34m|[0m             case Ok(_) => fail("expected Err")[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m_____________________^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'ctx'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:757:48:
+    [36m| [0m
+[36m757[0m [36m| [0m        server.registerAsyncErr("async/err", { ctx, complete, fail =>[0m
+    [36m| [0m                                               [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'complete'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:757:53:
+    [36m| [0m
+[36m757[0m [36m| [0m        server.registerAsyncErr("async/err", { ctx, complete, fail =>[0m
+    [36m| [0m                                                    [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'ctx'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:763:47:
+    [36m| [0m
+[36m763[0m [36m| [0m        server.registerAsyncErr("async/ok", { ctx, complete, fail =>[0m
+    [36m| [0m                                              [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+[33mwarning[0m: unused variable:'fail'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:763:62:
+    [36m| [0m
+[36m763[0m [36m| [0m        server.registerAsyncErr("async/ok", { ctx, complete, fail =>[0m
+    [36m| [0m                                                             [33m^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+[34mnote[0m: the warning originates in the macro `Test` (consider using `--debug-macro` for more info)
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_tests/src/tests.cj:665:1:
+    [36m| [0m
+[36m665[0m [36m| [0m  @Test[0m
+    [36m| [0m [34m_[0m[34m^[0m
+[36m666[0m [36m| [0m[34m|[0m class AsyncHandlerTest {[0m
+    [36m| [0m[34m|[0m ...[0m
+[36m789[0m [36m| [0m[34m|[0m }[0m
+    [36m| [0m[34m|[0m[34m_[0m[34m^[0m
+    [36m| [0m
+
+15 warnings generated, 15 warnings printed.
+cjpm build success
