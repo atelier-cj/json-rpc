@@ -3,7 +3,7 @@
   name = "jsonrpc"
   organization = "ystyle"
   description = "JSON-RPC 2.0 通用框架"
-  version = "0.7.8"
+  version = "0.7.9"
   output-type = "static"
   compile-option = ""
   override-compile-option = ""
@@ -17,7 +17,7 @@
 
 [dependencies]
   "jsonvalue" = "1.1.1"
-  "gjson" = "1.2.1"
+  "gjson" = "1.2.2"
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
   path-option = ["${CANGJIE_STDX_PATH}"]

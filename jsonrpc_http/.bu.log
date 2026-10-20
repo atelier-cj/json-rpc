@@ -1,0 +1,17 @@
+[33mwarning[0m: unused variable:'data'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_http/src/http_transport.cj:261:22:
+    [36m| [0m
+[36m261[0m [36m| [0m    public func send(data: Array<Byte>): Unit {}[0m
+    [36m| [0m                     [33m^^^^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+
+1 warning generated, 1 warning printed.
+[?25l[0J7[;r8
+[1F7[9999E8--------------------------------------------------------------------------------------------------
+Project tests finished, RESULT:
+Summary: TOTAL: 0
+    [32mPASSED[0m: 0, [32mSKIPPED[0m: 0, ERROR: 0
+    [31mFAILED[0m: 0
+--------------------------------------------------------------------------------------------------
+[0J7[;r8[?25hcjpm bundle success

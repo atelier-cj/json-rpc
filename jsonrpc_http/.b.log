@@ -1,0 +1,10 @@
+[33mwarning[0m: unused variable:'data'
+   [36m==>[0m /home/ystyle/Projects/Cangjie/json-rpc/jsonrpc_http/src/http_transport.cj:261:22:
+    [36m| [0m
+[36m261[0m [36m| [0m    public func send(data: Array<Byte>): Unit {}[0m
+    [36m| [0m                     [33m^^^^ unused variable[0m
+    [36m| [0m
+    [36m#[0m [0mnote[0m: this warning can be suppressed by setting the compiler option `-Woff unused`
+
+1 warning generated, 1 warning printed.
+cjpm build success
