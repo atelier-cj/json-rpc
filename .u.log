@@ -1,3 +1,0 @@
-Warning: cannot update some index files due to following reason:
-Warning: index of module 'bigpkg' from organization 'e2e' load failed with status 404: file does not exist
-cjpm update success

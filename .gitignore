@@ -27,3 +27,5 @@ jsonrpc_tcp/LICENSE
 jsonrpc_unix/LICENSE
 jsonrpc_http/LICENSE
 jsonrpc_websocket/LICENSE
+*.log
+.*.log
